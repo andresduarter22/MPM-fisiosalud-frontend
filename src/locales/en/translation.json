@@ -1,3 +1,7 @@
 {
-    "Hello": "Hello"
+    "title_calendar": "Calendar",
+    "title_patitent": "Patitent's list",
+    "title_contact_list": "Contact list",
+    "title_files": "Files",
+    "title_settings": "Settings"
 }
