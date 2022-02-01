@@ -1,7 +1,7 @@
 import logo from '../logo.svg';
 import '../styles/App.css';
 
-export function Patitents() {
+export function Patients() {
     return (
         <div className="App">
             <header className="App-header">
@@ -16,7 +16,6 @@ export function Patitents() {
                     rel="noopener noreferrer"
                     id="demo"
                 >
-
                 </a>
             </header>
         </div>
