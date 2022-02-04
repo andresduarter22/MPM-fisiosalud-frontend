@@ -5,7 +5,6 @@ import '../styles/App.css';
 import contactListRequests from '../requests/contactListRequests.js'
 
 export function ContactListComponent() {
-    //TODO: change count var name. 
     const [elements, setElements] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {

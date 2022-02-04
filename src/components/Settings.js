@@ -7,7 +7,7 @@ export function Settings() {
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <p>
-                    Hello!!
+                    Settings
                 </p>
                 <a
                     className="App-link"

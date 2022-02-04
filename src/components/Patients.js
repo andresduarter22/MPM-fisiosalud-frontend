@@ -7,7 +7,7 @@ export function Patients() {
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <p id="demo" src="../requests/patient.js">
-                    Hello!!fdsf
+                    Patients
                 </p>
                 <a
                     className="App-link"

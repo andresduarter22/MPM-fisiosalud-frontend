@@ -7,7 +7,7 @@ export function Calendar() {
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <p>
-                    Hello!!
+                    Calendar
                 </p>
                 <a
                     className="App-link"

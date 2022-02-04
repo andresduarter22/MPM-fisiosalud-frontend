@@ -7,7 +7,7 @@ export function Files() {
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <p>
-                    Hello!!
+                    Files
                 </p>
                 <a
                     className="App-link"
