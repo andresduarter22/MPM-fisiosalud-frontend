@@ -3,5 +3,12 @@
     "title_patitent": "Pacientes",
     "title_contact_list": "Contactos",
     "title_files": "Archivos",
-    "title_settings": "Propiedades"
+    "title_settings": "Propiedades",
+    "columnMenu_Unsort": "Sin clasificar",
+    "columnMenu_SortAsc": "Ordenar en orden ascendente",
+    "columnMenu_SortDesc": "Ordenar en orden descendente",
+    "columnMenu_Filter": "Filtro",
+    "columnMenu_HideColumn": "Ocultar",
+    "columnMenu_ShowColumns": "Mostrar columnas",
+    "add_new_Contact_button": "Añadir nuevo contacto"
 }

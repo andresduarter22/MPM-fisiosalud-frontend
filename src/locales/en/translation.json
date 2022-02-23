@@ -3,5 +3,12 @@
     "title_patitent": "Patients",
     "title_contact_list": "Contacts",
     "title_files": "Files",
-    "title_settings": "Settings"
+    "title_settings": "Settings",
+    "columnMenu_Unsort": "Unsort",
+    "columnMenu_SortAsc": "Sort Asc",
+    "columnMenu_SortDesc": "Sort Desc",
+    "columnMenu_Filter": "Filter",
+    "columnMenu_HideColumn": "Hide Column",
+    "columnMenu_ShowColumns": "Show Column",
+    "add_new_Contact_button": "Add new Contact"
 }
