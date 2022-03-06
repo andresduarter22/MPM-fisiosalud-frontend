@@ -9,6 +9,7 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import { Calendar } from './Calendar.js'
+import { Shop } from './Shop.js'
 import { Patients } from './Patients.js'
 import { ContactListComponent } from './ContactList.js'
 import { Files } from './Files.js'
@@ -35,8 +36,8 @@ function MainToolbar(props) {
 }
 export function App() {
     const [t] = useTranslation();
-    const pages = [t("title_calendar"), t("title_patitent"), t("title_contact_list"), t("title_files"), t("title_settings")];
-    const pageClasses = [Calendar, Patients, ContactListComponent, Files, Settings]
+    const pages = [t("title_calendar"), t("title_patitent"), t("title_contact_list"), t("title_files"), t("title_shop_Article"), t("title_settings")];
+    const pageClasses = [Calendar, Patients, ContactListComponent, Files, Shop, Settings]
 
     return (
         <BrowserRouter>

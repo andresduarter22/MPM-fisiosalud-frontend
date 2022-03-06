@@ -1,34 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
 import Scheduler from "react-mui-scheduler"
 
 export function Calendar() {
-    const [state, setState] = useState({
-        options: {
-            transitionMode: "zoom", // or fade
-            startWeekOn: "Mon",     // or Sun
-            defaultMode: "month",    // or week | day | timeline
-            minWidth: 540,
-            maxWidth: 540,
-            minHeight: 540,
-            maxHeight: 540
-        },
-        alertProps: {
-            open: true,
-            color: "info",          // info | success | warning | error
-            severity: "info",       // info | success | warning | error
-            message: "🚀 Let's start with awesome react-mui-scheduler 🔥 🔥 🔥",
-            showActionButton: true,
-            showNotification: true,
-            delay: 1500
-        },
-        toolbarProps: {
-            showSearchBar: true,
-            showSwitchModeButtons: true,
-            showDatePicker: true
-        }
-    })
-
     const events = [
         {
             id: "event-1",
@@ -80,6 +54,34 @@ export function Calendar() {
         }
     ]
 
+    const calendarProps = {
+        options: {
+            transitionMode: "zoom", // or fade
+            startWeekOn: "Mon",     // or Sun
+            defaultMode: "week",    // or week | day | timeline
+            minWidth: 540,
+            maxWidth: 540,
+            minHeight: 540,
+            maxHeight: 540
+        },
+        alertProps: {
+            open: true,
+            color: "info",          // info | success | warning | error
+            severity: "info",       // info | success | warning | error
+            message: "🚀 Let's start with awesome react-mui-scheduler 🔥 🔥 🔥",
+            showActionButton: true,
+            showNotification: true,
+            delay: 1500
+        },
+        toolbarProps: {
+            showSearchBar: true,
+            showSwitchModeButtons: true,
+            showDatePicker: true
+        }
+    }
+
+    const [state, setState] = useState(calendarProps)
+
     const handleCellClick = (event, row, day) => {
         // Do something...
     }
@@ -95,6 +97,14 @@ export function Calendar() {
     const handleAlertCloseButtonClicked = (item) => {
         // Do something...
     }
+
+    function setCalendar() {
+        return setState(calendarProps)
+    }
+
+    useEffect(() => {
+        setCalendar();
+    });
 
     return (
         <Scheduler

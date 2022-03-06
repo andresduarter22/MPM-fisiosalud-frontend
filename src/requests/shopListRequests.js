@@ -1,24 +1,24 @@
 import requester from "../apiRequester/Requester.js"
 
-async function getContactList() {
+async function getShopItemsList() {
     const requestOptions = {
         method: 'GET'
     };
-    return await requester.request('contactList', requestOptions);
+    return await requester.request('shopArticle', requestOptions);
 };
 
-async function insertContact(bodyValue) {
+async function insertShopItem(bodyValue) {
     const requestOptions = {
         method: 'POST',
         body: bodyValue
     };
-    return await requester.request('contactList', requestOptions);
+    return await requester.request('shopArticle', requestOptions);
 }
 
-async function updateContact(contactID, bodyValue) {
+async function updateShopItem(shopItemID, bodyValue) {
     const requestBody = {
         'filter': {
-            '_id': contactID,
+            '_id': shopItemID,
         },
         'body': {
             bodyValue
@@ -28,10 +28,10 @@ async function updateContact(contactID, bodyValue) {
         method: 'PUT',
         body: JSON.stringify(requestBody)
     };
-    return await requester.request('contactList', requestOptions);
+    return await requester.request('shopArticle', requestOptions);
 }
 
-async function deleteContact(bodyValue) {
+async function deleteShopItem(bodyValue) {
     const requestBody = {
         'filter': {
             '_id': bodyValue,
@@ -41,13 +41,13 @@ async function deleteContact(bodyValue) {
         method: 'DELETE',
         body: JSON.stringify(requestBody)
     };
-    return await requester.request('contactList', requestOptions);
+    return await requester.request('shopArticle', requestOptions);
 }
 
 const exports = {
-    getContactList,
-    insertContact,
-    updateContact,
-    deleteContact,
+    getShopItemsList,
+    insertShopItem,
+    updateShopItem,
+    deleteShopItem,
 };
 export default exports;

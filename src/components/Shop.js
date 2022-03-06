@@ -9,23 +9,29 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { TextField } from '@mui/material';
 import '../styles/App.css';
-import contactListRequests from '../requests/contactListRequests.js'
+import shopListRequests from '../requests/shopListRequests.js'
 import functionUtils from '../utils/functionUtils.js'
 import localizedComponents from '../utils/localizedComponents.js'
 
-export function ContactListComponent() {
+export function Shop() {
     const [t] = useTranslation();
     const [elements, setElements] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [open, setOpen] = React.useState(false);
-    const [contactName, setContactName] = useState('');
-    const [contactPhoneNumber, setContactPhoneNumber] = useState('');
+    const [shopItemName, setShopItemName] = useState('');
+    const [shopItemBasicInfo, setShopItemBasicInfo] = useState('');
+    const [numberOfItems, setNumberOfItems] = useState(0);
+    const [shopItemPrice, setShopItemPrice] = useState(0);
+    const [shopItemCurrency, setShopItemCurrency] = useState('');
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
     const columns = [
-        { field: 'contact_name', headerName: 'Contact Name', width: 200 },
-        { field: 'contact_phone_number', headerName: 'Phone Number', width: 200 },
+        { field: 'article_name', headerName: 'Item Name', width: 200 },
+        { field: 'basic_info', headerName: 'Basic Information', width: 200 },
+        { field: 'number_of_items', headerName: 'Number of Items', width: 200 },
+        { field: 'price', headerName: 'Price', width: 200 },
+        { field: 'currency', headerName: 'Currency', width: 200 },
         {
             field: 'actions',
             type: 'actions',
@@ -59,8 +65,8 @@ export function ContactListComponent() {
         p: 4,
     };
 
-    function loadContacList() {
-        contactListRequests.getContactList().then(result => {
+    function loadShopList() {
+        shopListRequests.getShopItemsList().then(result => {
             setElements(result)
             setIsLoaded(true)
         }, error => {
@@ -69,20 +75,23 @@ export function ContactListComponent() {
         });
     }
 
-    function createContact() {
+    function createShopItem() {
         const requestBody = {
             'body': {
-                'contact_name': contactName,
-                'contact_phone_number': contactPhoneNumber
+                'article_name': shopItemName,
+                'basic_info': shopItemBasicInfo,
+                'number_of_items': numberOfItems,
+                'price': shopItemPrice,
+                'currency': shopItemCurrency
             }
         }
-        contactListRequests.insertContact(JSON.stringify(requestBody));
+        shopListRequests.insertShopItem(JSON.stringify(requestBody));
         setOpen(false);
-        loadContacList();
+        loadShopList();
     }
 
     useEffect(() => {
-        loadContacList();
+        loadShopList();
     }, []);
 
     if (!isLoaded) {
@@ -91,7 +100,7 @@ export function ContactListComponent() {
         return (
             <div>
                 <div>
-                    <Button onClick={handleOpen}> {t('add_new_contact_button')} </Button>
+                    <Button onClick={handleOpen}> {t('add_new_shop_item_button')} </Button>
                 </div>
                 <div style={{ height: 600, width: '100%', background: 'white' }}>
                     <DataGrid
@@ -112,17 +121,26 @@ export function ContactListComponent() {
                 >
                     <Box sx={style}>
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                            {t('create_new_contact_title')}
+                            {t('create_new_shop_item_title')}
                         </Typography>
                         <div id="modal-modal-content">
-                            <div id="contact_name_input" style={{ height: 100 }}>
-                                <TextField fullWidth id='contact_name' placeholder='contact name' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
+                            <div id="article_name_input" style={{ height: 100 }}>
+                                <TextField fullWidth id='article_name' placeholder='Item name' value={shopItemName} onChange={functionUtils.handleSetInput(setShopItemName)}></TextField>
                             </div>
-                            <div id="contact_phone_number_input" style={{ height: 100 }}>
-                                <TextField fullWidth id='contact_phone_number' placeholder='contact phone number' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
+                            <div id="basic_info_input" style={{ height: 100 }}>
+                                <TextField fullWidth id='basic_info' placeholder='Basic information' value={shopItemBasicInfo} onChange={functionUtils.handleSetInput(setShopItemBasicInfo)}></TextField>
+                            </div>
+                            <div id="number_of_items_input" style={{ height: 100 }}>
+                                <TextField fullWidth id='number_of_items' placeholder='Number of Items' value={numberOfItems} onChange={functionUtils.handleSetInput(setNumberOfItems)}></TextField>
+                            </div>
+                            <div id="price_input" style={{ height: 100 }}>
+                                <TextField fullWidth id='price' placeholder='Price' value={shopItemPrice} onChange={functionUtils.handleSetInput(setShopItemPrice)}></TextField>
+                            </div>
+                            <div id="currency_input" style={{ height: 100 }}>
+                                <TextField fullWidth id='currency' placeholder='Currency' value={shopItemCurrency} onChange={functionUtils.handleSetInput(setShopItemCurrency)}></TextField>
                             </div>
                             <div id="crate_btn">
-                                <Button onClick={createContact}>Create</Button>
+                                <Button onClick={createShopItem}>Create</Button>
                             </div>
                         </div>
                     </Box>

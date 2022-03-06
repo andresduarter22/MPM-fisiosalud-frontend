@@ -4,11 +4,15 @@
     "title_contact_list": "Contacts",
     "title_files": "Files",
     "title_settings": "Settings",
+    "title_shop_Article": "Store Items",
     "columnMenu_Unsort": "Unsort",
     "columnMenu_SortAsc": "Sort Asc",
     "columnMenu_SortDesc": "Sort Desc",
     "columnMenu_Filter": "Filter",
     "columnMenu_HideColumn": "Hide Column",
     "columnMenu_ShowColumns": "Show Column",
-    "add_new_Contact_button": "Add new Contact"
+    "add_new_contact_button": "Add new Contact",
+    "add_new_shop_item_button": "Add new Shop Item",
+    "create_new_contact_title": "Create a Contact",
+    "create_new_shop_item_title": "Create a Shop item"
 }

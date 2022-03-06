@@ -4,11 +4,15 @@
     "title_contact_list": "Contactos",
     "title_files": "Archivos",
     "title_settings": "Propiedades",
+    "title_shop_Article": "Artículos de la Tienda",
     "columnMenu_Unsort": "Sin clasificar",
     "columnMenu_SortAsc": "Ordenar en orden ascendente",
     "columnMenu_SortDesc": "Ordenar en orden descendente",
     "columnMenu_Filter": "Filtro",
     "columnMenu_HideColumn": "Ocultar",
     "columnMenu_ShowColumns": "Mostrar columnas",
-    "add_new_Contact_button": "Añadir nuevo contacto"
+    "add_new_contact_button": "Añadir nuevo contacto",
+    "add_new_shop_item_button": "Añadir nuevo elemento de la tienda",
+    "create_new_contact_title": "Crear un contacto",
+    "create_new_shop_item_title": "Crear un elemento de la tienda"
 }
