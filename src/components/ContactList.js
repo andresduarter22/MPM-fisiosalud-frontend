@@ -34,13 +34,13 @@ export function ContactListComponent() {
                 <GridActionsCellItem
                     icon={<EditIcon />}
                     label="Edit"
-                    // onClick={duplicateUser(params.id)}
+                    onClick={() => {updateContact(params)}}
                     showInMenu
                 />,
                 <GridActionsCellItem
                     icon={<DeleteIcon />}
                     label="Delete"
-                    // onClick={contactListRequests.deleteContact(params.id)}
+                    onClick={() => {deleteContact(params.id)}}
                     showInMenu
                 />,
             ],
@@ -58,6 +58,8 @@ export function ContactListComponent() {
         boxShadow: 24,
         p: 4,
     };
+
+    const dataGridLocales = localizedComponents.DatagridLocales();
 
     function loadContacList() {
         contactListRequests.getContactList().then(result => {
@@ -81,6 +83,38 @@ export function ContactListComponent() {
         loadContacList();
     }
 
+    function deleteContact(contactID) {
+        const requestBody = {
+            'filter': {
+                '_id': contactID,
+            }
+        }
+        contactListRequests.deleteContact(JSON.stringify(requestBody));
+        loadContacList();
+    }
+
+    function updateContact(params) {
+        let contactInfo = contactListRequests.getContact(params.id).then(result => {
+            return result
+        }, error => {
+            console.log(error)
+        });
+        console.log(contactInfo)
+        const requestBody =
+        {
+            'filter': {
+                '_id': params.id,
+            },
+            'body': {
+                'contact_name': contactInfo.contact_name,
+                'contact_phone_number': contactInfo.contact_phone_number
+            }
+        }
+        console.log(requestBody)
+        // contactListRequests.updateContact(JSON.stringify(requestBody));
+        setOpen(false);
+    }
+
     useEffect(() => {
         loadContacList();
     }, []);
@@ -101,7 +135,7 @@ export function ContactListComponent() {
                         rowsPerPageOptions={[5]}
                         checkboxSelection
                         getRowId={(row) => row._id}
-                        localeText={localizedComponents.DatagridLocales}
+                        localeText={dataGridLocales}
                     />
                 </div>
                 <Modal
@@ -116,12 +150,12 @@ export function ContactListComponent() {
                         </Typography>
                         <div id="modal-modal-content">
                             <div id="contact_name_input" style={{ height: 100 }}>
-                                <TextField fullWidth id='contact_name' placeholder='contact name' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
+                                <TextField fullWidth required id='contact_name' placeholder='contact name' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
                             </div>
                             <div id="contact_phone_number_input" style={{ height: 100 }}>
-                                <TextField fullWidth id='contact_phone_number' placeholder='contact phone number' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
+                                <TextField fullWidth required id='contact_phone_number' placeholder='contact phone number' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
                             </div>
-                            <div id="crate_btn">
+                            <div id="create_btn">
                                 <Button onClick={createContact}>Create</Button>
                             </div>
                         </div>

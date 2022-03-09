@@ -7,45 +7,42 @@ async function getContactList() {
     return await requester.request('contactList', requestOptions);
 };
 
+async function getContact(contactID) {
+    const requestOptions = {
+        method: 'GET'
+    };
+    const options = `id=${contactID}`
+    return requester.request('contactList', requestOptions, options);
+};
+
 async function insertContact(bodyValue) {
     const requestOptions = {
         method: 'POST',
         body: bodyValue
     };
     return await requester.request('contactList', requestOptions);
-}
+};
 
-async function updateContact(contactID, bodyValue) {
-    const requestBody = {
-        'filter': {
-            '_id': contactID,
-        },
-        'body': {
-            bodyValue
-        }
-    }
+async function updateContact(bodyValue) {
+    const requestBody = bodyValue
     const requestOptions = {
         method: 'PUT',
         body: JSON.stringify(requestBody)
     };
     return await requester.request('contactList', requestOptions);
-}
+};
 
-async function deleteContact(bodyValue) {
-    const requestBody = {
-        'filter': {
-            '_id': bodyValue,
-        }
-    }
+async function deleteContact(requestBody) {
     const requestOptions = {
         method: 'DELETE',
-        body: JSON.stringify(requestBody)
+        body: requestBody
     };
     return await requester.request('contactList', requestOptions);
-}
+};
 
 const exports = {
     getContactList,
+    getContact,
     insertContact,
     updateContact,
     deleteContact,
