@@ -20,8 +20,8 @@ export function Shop() {
     const [open, setOpen] = React.useState(false);
     const [shopItemName, setShopItemName] = useState('');
     const [shopItemBasicInfo, setShopItemBasicInfo] = useState('');
-    const [numberOfItems, setNumberOfItems] = useState(0);
-    const [shopItemPrice, setShopItemPrice] = useState(0);
+    const [numberOfItems, setNumberOfItems] = useState('');
+    const [shopItemPrice, setShopItemPrice] = useState('');
     const [shopItemCurrency, setShopItemCurrency] = useState('');
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -80,8 +80,8 @@ export function Shop() {
             'body': {
                 'article_name': shopItemName,
                 'basic_info': shopItemBasicInfo,
-                'number_of_items': numberOfItems,
-                'price': shopItemPrice,
+                'number_of_items': Number(numberOfItems),
+                'price': Number(shopItemPrice),
                 'currency': shopItemCurrency
             }
         }
@@ -131,10 +131,10 @@ export function Shop() {
                                 <TextField fullWidth id='basic_info' placeholder='Basic information' value={shopItemBasicInfo} onChange={functionUtils.handleSetInput(setShopItemBasicInfo)}></TextField>
                             </div>
                             <div id="number_of_items_input" style={{ height: 100 }}>
-                                <TextField fullWidth id='number_of_items' placeholder='Number of Items' value={numberOfItems} onChange={functionUtils.handleSetInput(setNumberOfItems)}></TextField>
+                                <TextField fullWidth id='number_of_items' type={'number'} placeholder='Number of Items' value={numberOfItems} onChange={functionUtils.handleSetInput(setNumberOfItems)}></TextField>
                             </div>
                             <div id="price_input" style={{ height: 100 }}>
-                                <TextField fullWidth id='price' placeholder='Price' value={shopItemPrice} onChange={functionUtils.handleSetInput(setShopItemPrice)}></TextField>
+                                <TextField fullWidth id='price' type={'number'} placeholder='Price' value={shopItemPrice} onChange={functionUtils.handleSetInput(setShopItemPrice)}></TextField>
                             </div>
                             <div id="currency_input" style={{ height: 100 }}>
                                 <TextField fullWidth id='currency' placeholder='Currency' value={shopItemCurrency} onChange={functionUtils.handleSetInput(setShopItemCurrency)}></TextField>

@@ -12,7 +12,7 @@ async function getContact(contactID) {
         method: 'GET'
     };
     const options = `id=${contactID}`
-    return requester.request('contactList', requestOptions, options);
+    return (await requester.request('contactList', requestOptions, options))[0]
 };
 
 async function insertContact(bodyValue) {
@@ -23,11 +23,10 @@ async function insertContact(bodyValue) {
     return await requester.request('contactList', requestOptions);
 };
 
-async function updateContact(bodyValue) {
-    const requestBody = bodyValue
+async function updateContact(requestBody) {
     const requestOptions = {
         method: 'PUT',
-        body: JSON.stringify(requestBody)
+        body: requestBody
     };
     return await requester.request('contactList', requestOptions);
 };
