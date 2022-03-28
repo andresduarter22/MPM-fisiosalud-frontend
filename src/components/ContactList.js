@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from "react-i18next";
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -6,9 +6,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 import Modal from '@mui/material/Modal';
+import Switch from '@mui/material/Switch';
 import { TextField } from '@mui/material';
 import '../styles/App.css';
+// import CustomSwitch from './element/CustomSwitch.js';
 import contactListRequests from '../requests/contactListRequests.js'
 import functionUtils from '../utils/functionUtils.js'
 import localizedComponents from '../utils/localizedComponents.js'
@@ -19,6 +22,7 @@ export function ContactListComponent() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [openCreate, setOpenCreate] = useState(false);
     const [openUpdate, setOpenUpdate] = useState(false);
+    const [openInfo, setopenInfo] = useState(false);
     const [contactNameError, setContactNameError] = useState(false);
     const [contactPhoneNumberError, setContactPhoneNumberError] = useState(false);
     const [contactName, setContactName] = useState('');
@@ -26,9 +30,24 @@ export function ContactListComponent() {
     const [contactAddtInfo, setContactAddtInfo] = useState('');
     const [contactEmail, setContactEmail] = useState('');
     const [updateTargetID, setUpdateTargetID] = useState('');
+    const [contactNameEditable, setContactNameEditable] = useState(false);
+    const [contactPhoneNumberEditable, setContactPhoneNumberEditable] = useState(false);
+    const [contactAddtInfoEditable, setContactAddtInfoEditable] = useState(false);
+    const [contactEmailEditable, setContactEmailEditable] = useState(false);
+    const [saveButtonEditable, setsaveButtonEditable] = useState(false);
+    const [checked, setChecked] = useState(false);
     const handleOpenCreate = () => setOpenCreate(true);
+    const handleOpenInfo = async (contactID) => {
+        const contactInfo = await getContact(contactID);
+        setContactName(contactInfo['contact_name']);
+        setContactPhoneNumber(contactInfo['contact_phone_number']);
+        setContactEmail(contactInfo['contact_email']);
+        setContactAddtInfo(contactInfo['additional_info']);
+        setopenInfo(true)
+    };
     const handleOpenUpdate = async (contactID) => {
         const contactInfo = await getContact(contactID);
+        enableEditable();
         setContactName(contactInfo['contact_name']);
         setContactPhoneNumber(contactInfo['contact_phone_number']);
         setContactEmail(contactInfo['contact_email']);
@@ -39,14 +58,23 @@ export function ContactListComponent() {
     const handleClose = () => {
         setOpenUpdate(false);
         setOpenCreate(false);
+        setopenInfo(false);
         cleanModalFields();
     };
+    const switchHandler = (event) => {
+        setChecked(event.target.checked);
+        enableEditable();
+      };
 
     const dataGridLocales = localizedComponents.DatagridLocales();
     const columns = [
-        { field: 'contact_name', headerName: 'Contact Name', width: 200 },
-        { field: 'contact_phone_number', headerName: 'Phone Number', width: 200 },
-        { field: 'contact_email', headerName: 'Email', width: 200 },
+        {
+            field: 'contact_name', headerName: t('title_contact_name'), width: 200, renderCell: (params) => (
+                <Link onClick={() => { handleOpenInfo(params.id) }}>{params.value}</Link>
+            )
+        },
+        { field: 'contact_phone_number', headerName: t('title_contact_phone_number'), width: 200 },
+        { field: 'contact_email', headerName: t('title_contact_email'), width: 200 },
         {
             field: 'actions',
             type: 'actions',
@@ -92,11 +120,6 @@ export function ContactListComponent() {
         };
     };
 
-    // const errors =  { 
-    //     "name": setContactNameError(true),
-    //     "phone_number": setContactPhoneNumberError(true)
-    // }
-
     async function createContact() {
         let error = false;
         if (contactName === "") {
@@ -124,7 +147,8 @@ export function ContactListComponent() {
         }
         if (contactEmail !== '') requestBody.body['contact_email'] = contactEmail
         if (contactEmail !== '') requestBody.body['additional_info'] = contactAddtInfo
-        await contactListRequests.insertContact(JSON.stringify(requestBody))
+        await contactListRequests.insertContact(JSON.stringify(requestBody));
+        enableEditable();
         loadContacList();
         cleanModalFields();
 
@@ -197,10 +221,21 @@ export function ContactListComponent() {
 
     if (!isLoaded) return <div>Loading...</div>;
 
+    const enableEditable = () => {
+        setContactNameEditable(checked);
+        setContactPhoneNumberEditable(checked);
+        setContactEmailEditable(checked);
+        setContactAddtInfoEditable(checked);
+        setsaveButtonEditable(checked);
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                <Button onClick={handleOpenCreate}> {t('add_new_contact_button')} </Button>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Button variant="h3" gutterBottom component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }}>
+                    {t('title_contact_list')}
+                </Button>
+                <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('add_new_contact_button')} </Button>
             </div>
             <div style={{ height: 600, width: '100%', background: 'white' }}>
                 <DataGrid
@@ -225,16 +260,20 @@ export function ContactListComponent() {
                     </Typography>
                     <div id="modal-modal-content" style={{ marginTop: 20 }}>
                         <div id="contact_name_input">
-                            <TextField fullWidth error={contactNameError} required id='contact_name' placeholder='Contact name' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
+                            <TextField fullWidth error={contactNameError} required id='contact_name'
+                                placeholder='Contact name' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
                         </div>
                         <div id="contact_phone_number_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth error={contactPhoneNumberError} type="tel" required id='contact_phone_number' placeholder='Contact phone number' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
+                            <TextField fullWidth error={contactPhoneNumberError} type="tel" required id='contact_phone_number'
+                                placeholder='Contact phone number' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
                         </div>
                         <div id="contact_email_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth type="email" id='contact_email' placeholder='Contact E-mail' value={contactEmail} onChange={functionUtils.handleSetInput(setContactEmail)}></TextField>
+                            <TextField fullWidth type="email" id='contact_email'
+                                placeholder='Contact E-mail' value={contactEmail} onChange={functionUtils.handleSetInput(setContactEmail)}></TextField>
                         </div>
                         <div id="contact_addtInfo_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth multiline id='contact_addtInfo' placeholder='Contact Additional Information' value={contactAddtInfo} onChange={functionUtils.handleSetInput(setContactAddtInfo)}></TextField>
+                            <TextField fullWidth multiline id='contact_addtInfo'
+                                placeholder='Contact Additional Information' value={contactAddtInfo} onChange={functionUtils.handleSetInput(setContactAddtInfo)}></TextField>
                         </div>
                         <div id="create_btn" style={{ marginTop: 15, float: 'right' }}>
                             <Button onClick={createContact}>Create</Button>
@@ -253,20 +292,58 @@ export function ContactListComponent() {
                         Update contact
                     </Typography>
                     <div id="modal-modal-content" style={{ marginTop: 20 }}>
+                    <Switch checked={checked} onChange={switchHandler} />
                         <div id="contact_name_input">
-                            <TextField fullWidth error={contactNameError} required id='contact_name' placeholder='contact name' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
+                            <TextField fullWidth error={contactNameError} required id='contact_name'
+                                disabled = {contactNameEditable} placeholder='contact name' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
                         </div>
                         <div id="contact_phone_number_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth error={contactPhoneNumberError} required id='contact_phone_number' placeholder='contact phone number' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
+                            <TextField fullWidth error={contactPhoneNumberError} required id='contact_phone_number'
+                                disabled = {contactPhoneNumberEditable} placeholder='contact phone number' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
                         </div>
                         <div id="contact_email_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth type="email" id='contact_email' placeholder='Contact E-mail' value={contactEmail} onChange={functionUtils.handleSetInput(setContactEmail)}></TextField>
+                            <TextField fullWidth type="email" id='contact_email'
+                                disabled = {contactEmailEditable} placeholder='Contact E-mail' value={contactEmail} onChange={functionUtils.handleSetInput(setContactEmail)}></TextField>
                         </div>
                         <div id="contact_addtInfo_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth multiline id='contact_addtInfo' placeholder='Contact Additional Information' value={contactAddtInfo} onChange={functionUtils.handleSetInput(setContactAddtInfo)}></TextField>
+                            <TextField fullWidth multiline id='contact_addtInfo'
+                                disabled = {contactAddtInfoEditable} placeholder='Contact Additional Information' value={contactAddtInfo} onChange={functionUtils.handleSetInput(setContactAddtInfo)}></TextField>
                         </div>
                         <div id="create_btn" style={{ marginTop: 15, float: 'right' }}>
-                            <Button onClick={updateContact}>Update</Button>
+                            <Button disabled = {saveButtonEditable} onClick={updateContact}>Update</Button>
+                        </div>
+                    </div>
+                </Box>
+            </Modal>
+            <Modal
+                open={openInfo}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-content"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Update contact
+                    </Typography>
+                    <div id="modal-modal-content" style={{ marginTop: 20 }}>
+                        <div id="contact_name_input">
+                            <TextField fullWidth error={contactNameError} required id='contact_name'
+                                placeholder='contact name' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
+                        </div>
+                        <div id="contact_phone_number_input" style={{ marginTop: 15 }}>
+                            <TextField fullWidth error={contactPhoneNumberError} required id='contact_phone_number'
+                                disabled placeholder='contact phone number' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
+                        </div>
+                        <div id="contact_email_input" style={{ marginTop: 15 }}>
+                            <TextField fullWidth type="email" id='contact_email'
+                                disabled placeholder='Contact E-mail' value={contactEmail} onChange={functionUtils.handleSetInput(setContactEmail)}></TextField>
+                        </div>
+                        <div id="contact_addtInfo_input" style={{ marginTop: 15 }}>
+                            <TextField fullWidth multiline id='contact_addtInfo'
+                                disabled placeholder='Contact Additional Information' value={contactAddtInfo} onChange={functionUtils.handleSetInput(setContactAddtInfo)}></TextField>
+                        </div>
+                        <div id="create_btn" style={{ marginTop: 15, float: 'right' }}>
+                            <Button disabled onClick={updateContact}>Update</Button>
                         </div>
                     </div>
                 </Box>

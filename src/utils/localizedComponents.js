@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 
-// eslint-disable-next-line react-hooks/rules-of-hooks
 function DatagridLocales() { 
     const [t] = useTranslation();
 
