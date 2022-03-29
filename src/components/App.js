@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Route, Switch, Link as RouterLink } from 'react-router-dom';
 import '../styles/App.css';
