@@ -8,12 +8,11 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Modal from '@mui/material/Modal';
 import Switch from '@mui/material/Switch';
-import { TextField } from '@mui/material';
-import '../styles/App.css';
-// import CustomSwitch from './element/CustomSwitch.js';
+import { FormGroup, TextField, FormControlLabel } from '@mui/material';
 import contactListRequests from '../requests/contactListRequests.js'
 import functionUtils from '../utils/functionUtils.js'
 import localizedComponents from '../utils/localizedComponents.js'
+import '../styles/App.css';
 
 export function ContactListComponent() {
     const [t] = useTranslation();
@@ -21,6 +20,8 @@ export function ContactListComponent() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [openCreate, setOpenCreate] = useState(false);
     const [openUpdate, setOpenUpdate] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+
     const [contactNameError, setContactNameError] = useState(false);
     const [contactPhoneNumberError, setContactPhoneNumberError] = useState(false);
     const [contactName, setContactName] = useState('');
@@ -28,22 +29,15 @@ export function ContactListComponent() {
     const [contactEmail, setContactEmail] = useState('');
     const [contactAddtInfo, setContactAddtInfo] = useState('');
     const [updateTargetID, setUpdateTargetID] = useState('');
-    const [contactNameEditable, setContactNameEditable] = useState(false);
-    const [contactPhoneNumberEditable, setContactPhoneNumberEditable] = useState(false);
-    const [contactAddtInfoEditable, setContactAddtInfoEditable] = useState(false);
-    const [contactEmailEditable, setContactEmailEditable] = useState(false);
-    const [saveButtonEditable, setsaveButtonEditable] = useState(false);
-    const [isChecked, setIsChecked] = useState(false);
-    const [checked, setChecked] = useState(false);
 
     const handleOpenCreate = () => setOpenCreate(true);
 
     const handleOpenUpdate = async (contactID) => {
         const contactInfo = await getContact(contactID);
-        setContactName(contactInfo['contact_name']);
-        setContactPhoneNumber(contactInfo['contact_phone_number']);
-        setContactEmail(contactInfo['contact_email']);
-        setContactAddtInfo(contactInfo['additional_info']);
+        setContactName(contactInfo.contact_name);
+        setContactPhoneNumber(contactInfo.contact_phone_number);
+        setContactEmail(contactInfo.contact_email);
+        setContactAddtInfo(contactInfo.additional_info);
         setUpdateTargetID(contactID);
         setOpenUpdate(true);
     };
@@ -51,13 +45,11 @@ export function ContactListComponent() {
     const handleClose = () => {
         setOpenUpdate(false);
         setOpenCreate(false);
-        enableTextFields();
+        enableTextFields(false);
         cleanModalFields();
     };
     const switchHandler = (event) => {
-        setChecked(event.target.checked);
-        setIsChecked(checked);
-        enableTextFields();
+        enableTextFields(event.target.checked);
     };
 
     const dataGridLocales = localizedComponents.DatagridLocales();
@@ -77,26 +69,13 @@ export function ContactListComponent() {
             getActions: (params) => [
                 <GridActionsCellItem
                     icon={<DeleteIcon />}
-                    label="Delete"
+                    label={t('button_delete')}
                     onClick={() => { deleteContact(params.id) }}
                     showInMenu
                 />,
             ],
         }
     ]
-
-    // TODO: move to another file
-    const style = {
-        position: 'absolute',
-        top: '45%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-    };
 
     async function loadContacList() {
         try {
@@ -113,51 +92,36 @@ export function ContactListComponent() {
         return await contactListRequests.getContact(contactID);
     };
 
-    async function createContact() {
+    async function handleSubmit() {
         if (validateRequiredFields()) return;
         setIsLoaded(false);
         const requestBody = {
-            'body': {
-                'contact_name': contactName,
-                'contact_phone_number': contactPhoneNumber
-            }
-        };
-        if (contactEmail !== '') requestBody.body['contact_email'] = contactEmail;
-        if (contactAddtInfo !== '') requestBody.body['additional_info'] = contactAddtInfo;
-        await contactListRequests.insertContact(JSON.stringify(requestBody));
-        loadContacList();
-        cleanModalFields();
-
-        setOpenCreate(false);
-    };
-
-    async function updateContact() {
-        if (validateRequiredFields()) return;
-        setIsLoaded(false);
-        const requestBody =
-        {
-            'filter': {
-                '_id': updateTargetID,
+            body: {
+                contact_name: contactName,
+                contact_phone_number: contactPhoneNumber
             },
-            'body': {
-                'contact_name': contactName,
-                'contact_phone_number': contactPhoneNumber
-            }
+            filter: {}
         };
-        if (contactEmail !== '') requestBody.body['contact_email'] = contactEmail;
-        if (contactAddtInfo !== '') requestBody.body['additional_info'] = contactAddtInfo;
-        await contactListRequests.updateContact(JSON.stringify(requestBody));
-        enableTextFields();
-        loadContacList();
-        setOpenUpdate(false);
+        if (contactEmail !== '') requestBody.body.contact_email = contactEmail;
+        if (contactAddtInfo !== '') requestBody.body.additional_info = contactAddtInfo;
+        if (openCreate) {
+            await contactListRequests.insertContact(JSON.stringify(requestBody));
+            setOpenCreate(false);
+        } else if (openUpdate) {
+            requestBody.filter._id = updateTargetID;
+            await contactListRequests.updateContact(JSON.stringify(requestBody));
+            enableTextFields(false);
+            setOpenUpdate(false);
+        }
         cleanModalFields();
+        loadContacList();
     };
 
     async function deleteContact(contactID) {
         setIsLoaded(false);
         const requestBody = {
-            'filter': {
-                '_id': contactID,
+            filter: {
+                _id: contactID,
             }
         }
         await contactListRequests.deleteContact(JSON.stringify(requestBody))
@@ -192,12 +156,8 @@ export function ContactListComponent() {
         setUpdateTargetID('');
     };
 
-    const enableTextFields = () => {
-        setContactNameEditable(isChecked);
-        setContactPhoneNumberEditable(isChecked);
-        setContactEmailEditable(isChecked);
-        setContactAddtInfoEditable(isChecked);
-        setsaveButtonEditable(isChecked);
+    function enableTextFields(checked) {
+        setIsEditing(checked);
     };
 
     useEffect(() => {
@@ -212,7 +172,7 @@ export function ContactListComponent() {
                 <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }}>
                     {t('title_contact_list')}
                 </Button>
-                <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('add_new_contact_button')} </Button>
+                <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_contact')} </Button>
             </div>
             <div style={{ height: 600, width: '100%', background: 'white' }}>
                 <DataGrid
@@ -229,70 +189,53 @@ export function ContactListComponent() {
                 open={openCreate}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-content"
-            >
-                <Box sx={style}>
+                aria-describedby="modal-modal-content" >
+                <Box className='modal-box'>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        {t('create_new_contact_title')}
+                        {t('title_create_new_contact')}
                     </Typography>
-                    <div id="modal-modal-content" style={{ marginTop: 20 }}>
-                        <div id="contact_name_input">
-                            <TextField fullWidth error={contactNameError} required id='contact_name'
-                                placeholder='Contact name*' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
-                        </div>
-                        <div id="contact_phone_number_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth error={contactPhoneNumberError} type="tel" required id='contact_phone_number' inputProps={{ inputmode: 'numeric' }}
-                                placeholder='Contact phone number*' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
-                        </div>
-                        <div id="contact_email_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth type="email" id='contact_email'
-                                placeholder='Contact E-mail (Optional)' value={contactEmail} onChange={functionUtils.handleSetInput(setContactEmail)}></TextField>
-                        </div>
-                        <div id="contact_addtInfo_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth multiline rows={10} id='contact_addtInfo'
-                                placeholder='Contact Additional Information' value={contactAddtInfo} onChange={functionUtils.handleSetInput(setContactAddtInfo)}></TextField>
-                        </div>
-                        <div id="create_btn" style={{ marginTop: 15, float: 'right' }}>
-                            <Button onClick={createContact}>Create</Button>
-                        </div>
-                    </div>
+                    <FormGroup>
+                        <TextField fullWidth error={contactNameError} required id='contact_name'
+                            label={t('label_contact_name')} value={contactName}
+                            onChange={functionUtils.handleSetInput(setContactName)} />
+                        <TextField fullWidth error={contactPhoneNumberError} type="tel" required id='contact_phone_number' inputProps={{ inputMode: 'numeric' }}
+                            label={t('label_contact_phone_number')} value={contactPhoneNumber}
+                            onChange={functionUtils.handleSetInput(setContactPhoneNumber)} />
+                        <TextField fullWidth type="email" id='contact_email'
+                            label={t('label_contact_email')} value={contactEmail}
+                            onChange={functionUtils.handleSetInput(setContactEmail)} />
+                        <TextField fullWidth multiline rows={10} id='contact_addtInfo'
+                            label={t('label_additional_info')} value={contactAddtInfo}
+                            onChange={functionUtils.handleSetInput(setContactAddtInfo)} />
+                        <Button onClick={handleSubmit}>{t('button_create')}</Button>
+                    </FormGroup>
                 </Box>
             </Modal>
             <Modal
                 open={openUpdate}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-content"
-            >
-                <Box sx={style}>
+                aria-describedby="modal-modal-content" >
+                <Box className='modal-box'>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Update contact
+                        {t('title_update_contact')}
                     </Typography>
-                    <div id="modal-modal-content" style={{ marginTop: 20 }}>
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Typography>Enable editing: </Typography>
-                            <Switch checked={checked} onChange={switchHandler} />
-                        </div>
-                        <div id="contact_name_input">
-                            <TextField fullWidth error={contactNameError} required id='contact_name'
-                                disabled={!contactNameEditable} placeholder='contact name' value={contactName} onChange={functionUtils.handleSetInput(setContactName)}></TextField>
-                        </div>
-                        <div id="contact_phone_number_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth error={contactPhoneNumberError} required id='contact_phone_number'
-                                disabled={!contactPhoneNumberEditable} placeholder='contact phone number' value={contactPhoneNumber} onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
-                        </div>
-                        <div id="contact_email_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth type="email" id='contact_email'
-                                disabled={!contactEmailEditable} placeholder='Contact E-mail' value={contactEmail} onChange={functionUtils.handleSetInput(setContactEmail)}></TextField>
-                        </div>
-                        <div id="contact_addtInfo_input" style={{ marginTop: 15 }}>
-                            <TextField fullWidth multiline rows={10} id='contact_addtInfo'
-                                disabled={!contactAddtInfoEditable} placeholder='Contact Additional Information' value={contactAddtInfo} onChange={functionUtils.handleSetInput(setContactAddtInfo)}></TextField>
-                        </div>
-                        <div id="create_btn" style={{ marginTop: 15, float: 'right' }}>
-                            <Button disabled={!saveButtonEditable} onClick={updateContact}>Update</Button>
-                        </div>
-                    </div>
+                    <FormGroup>
+                        <FormControlLabel control={<Switch onChange={switchHandler} />} label="Enable editing" />
+                        <TextField fullWidth error={contactNameError} required id='contact_name'
+                            disabled={!isEditing} label={t('label_contact_name')} value={contactName}
+                            onChange={functionUtils.handleSetInput(setContactName)}></TextField>
+                        <TextField fullWidth error={contactPhoneNumberError} required id='contact_phone_number'
+                            disabled={!isEditing} label={t('label_contact_phone_number')} value={contactPhoneNumber}
+                            onChange={functionUtils.handleSetInput(setContactPhoneNumber)}></TextField>
+                        <TextField fullWidth type="email" id='contact_email'
+                            disabled={!isEditing} label={t('label_contact_email')} value={contactEmail}
+                            onChange={functionUtils.handleSetInput(setContactEmail)}></TextField>
+                        <TextField fullWidth multiline rows={10} id='contact_addtInfo'
+                            disabled={!isEditing} label={t('label_additional_info')} value={contactAddtInfo}
+                            onChange={functionUtils.handleSetInput(setContactAddtInfo)}></TextField>
+                        <Button disabled={!isEditing} onClick={handleSubmit}>{t('button_update')}</Button>
+                    </FormGroup>
                 </Box>
             </Modal>
         </div>

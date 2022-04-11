@@ -26,6 +26,8 @@ export function Shop() {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
+    const dataGridLocales = localizedComponents.DatagridLocales();
+
     const columns = [
         { field: 'article_name', headerName: 'Item Name', width: 200 },
         { field: 'basic_info', headerName: 'Basic Information', width: 200 },
@@ -52,18 +54,6 @@ export function Shop() {
             ],
         }
     ]
-
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-    };
 
     function loadShopList() {
         shopListRequests.getShopItemsList().then(result => {
@@ -100,7 +90,7 @@ export function Shop() {
         return (
             <div>
                 <div>
-                    <Button onClick={handleOpen}> {t('add_new_shop_item_button')} </Button>
+                    <Button onClick={handleOpen}> {t('button_add_new_shop_item')} </Button>
                 </div>
                 <div style={{ height: 600, width: '100%', background: 'white' }}>
                     <DataGrid
@@ -110,7 +100,7 @@ export function Shop() {
                         rowsPerPageOptions={[5]}
                         checkboxSelection
                         getRowId={(row) => row._id}
-                        localeText={localizedComponents.DatagridLocales}
+                        localeText={dataGridLocales}
                     />
                 </div>
                 <Modal
@@ -119,9 +109,9 @@ export function Shop() {
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-content"
                 >
-                    <Box sx={style}>
+                    <Box className='modal-box'>
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                            {t('create_new_shop_item_title')}
+                            {t('title_create_new_shop_item')}
                         </Typography>
                         <div id="modal-modal-content">
                             <div id="article_name_input" style={{ height: 100 }}>
