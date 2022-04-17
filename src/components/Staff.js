@@ -27,11 +27,18 @@ export function Staff() {
     const [openCreate, setOpenCreate] = useState(false);
     const [openUpdate, setOpenUpdate] = useState(false);
 
+    const [staffIDError, setStaffIDError] = useState(false);
+    const [staffNameError, setStaffNameError] = useState(false);
+    const [staffEmailError, setStaffEmailError] = useState(false);
+    const [staffPhoneError, setStaffPhoneError] = useState(false);
+    const [staffRoleError, setStaffRoleError] = useState(false);
+
     const [staffID, setStaffID] = useState('');
     const [staffName, setStaffName] = useState('');
     const [staffPhoneNumber, setStaffPhoneNumber] = useState('');
     const [staffEmail, setStaffEmail] = useState('');
-    const [staffRole, setStaffRole] = useState('admin');
+    const [updateID, setUpdateID] = useState('');
+    const [staffRole, setStaffRole] = useState('');
     const [staffRoleOptions] = useState([
         { value: 'admin', label: t('label_staff_role_admin') },
         { value: 'staff', label: t('label_staff_role_staff') },
@@ -40,9 +47,10 @@ export function Staff() {
 
     const handleOpenCreate = () => setOpenCreate(true);
 
-    const handleOpenUpdate = async (areaID) => {
-        const areaInfo = await getStaff(areaID);
+    const handleOpenUpdate = async (updateStaffID) => {
+        const areaInfo = await getStaff(updateStaffID);
         setStaffID(areaInfo._id);
+        setUpdateID(updateStaffID);
         setStaffName(areaInfo.staff_name);
         setStaffPhoneNumber(areaInfo.staff_phone_number);
         setStaffEmail(areaInfo.staff_email);
@@ -114,7 +122,47 @@ export function Staff() {
         setStaffName('');
         setStaffPhoneNumber('');
         setStaffEmail('');
-        setStaffRole('admin');
+        setStaffRole('');
+    };
+
+    function validateRequiredFields() {
+        let error = false;
+        if (staffID === '') {
+            setStaffIDError(true);
+            return true;
+        } else {
+            setStaffIDError(false);
+            error = false;
+        }
+        if (staffName === '') {
+            setStaffNameError(true);
+            return true;
+        } else {
+            setStaffNameError(false);
+            error = false;
+        }
+        if (staffPhoneNumber === '') {
+            setStaffPhoneError(true);
+            return true;
+        } else {
+            setStaffPhoneError(false);
+            error = false;
+        }
+        if (staffEmail === '') {
+            setStaffEmailError(true);
+            return true;
+        } else {
+            setStaffEmailError(false);
+            error = false;
+        }
+        if (staffRole === '') {
+            setStaffRoleError(true);
+            return true;
+        } else {
+            setStaffRoleError(false);
+            error = false;
+        }
+        return error;
     };
 
     const handleDelete = async (id) => {
@@ -124,7 +172,7 @@ export function Staff() {
                 _id: id,
             }
         }
-        await staffListRequests.deleteStaff(requestBody);
+        await staffListRequests.deleteStaff(JSON.stringify(requestBody));
         loadStaffList();
     };
 
@@ -133,7 +181,9 @@ export function Staff() {
     };
 
     const handleSubmit = async () => {
-        const bodyValue = {
+        if (validateRequiredFields()) return;
+        setIsLoaded(false);
+        const requestBody = {
             body: {
                 _id: staffID,
                 staff_name: staffName,
@@ -141,17 +191,16 @@ export function Staff() {
                 staff_email: staffEmail,
                 staff_role: staffRole,
             },
+            filter: {}
         };
         if (openCreate) {
-            console.log(bodyValue)
-            await staffListRequests.insertStaff(bodyValue);
+            await staffListRequests.insertStaff(JSON.stringify(requestBody));
         } else if (openUpdate) {
-            bodyValue.filter._id = staffID;
-            console.log(bodyValue)
-            await staffListRequests.updateStaff(bodyValue);
+            requestBody.filter._id = updateID;
+            await staffListRequests.updateStaff(JSON.stringify(requestBody));
         }
-        loadStaffList();
         handleClose();
+        loadStaffList();
     };
 
     useEffect(() => {
@@ -188,22 +237,24 @@ export function Staff() {
                             Create Staff Member
                         </Typography>
                         <FormGroup>
-                            <TextField id="staff_id_input" label="Staff ID" value={staffID}
+                            <TextField id="staff_id_input" label="Staff ID" value={staffID} error={staffIDError} required
                                 onChange={functionUtils.handleSetInput(setStaffID)} />
-                            <TextField id="staff_name_input" label="Staff Name" value={staffName}
+                            <TextField id="staff_name_input" label="Staff Name" value={staffName} error={staffNameError} required
                                 onChange={functionUtils.handleSetInput(setStaffName)} />
-                            <TextField id="staff_phone_number_input" label="Staff Phone Number" value={staffPhoneNumber}
+                            <TextField id="staff_phone_number_input" label="Staff Phone Number" value={staffPhoneNumber} error={staffPhoneError} required
                                 onChange={functionUtils.handleSetInput(setStaffPhoneNumber)} />
-                            <TextField id="staff_email_input" label="Staff Email" value={staffEmail}
+                            <TextField id="staff_email_input" label="Staff Email" value={staffEmail} error={staffEmailError} required
                                 onChange={functionUtils.handleSetInput(setStaffEmail)} />
                             <FormControl fullWidth>
-                                <InputLabel id="staff_role_label">Role</InputLabel>
+                                <InputLabel id="staff_role_label" required>Role</InputLabel>
                                 <Select
                                     labelId="staff_role_label"
                                     label="Role"
                                     id="staff_role_select"
                                     value={staffRole}
                                     onChange={functionUtils.handleSetInput(setStaffRole)}
+                                    error={staffRoleError}
+                                    required
                                 >
                                     {staffRoleOptions.map((option) => (
                                         <MenuItem key={option.value} value={option.value}>
@@ -236,22 +287,24 @@ export function Staff() {
                         </Typography>
                         <FormGroup>
                             <FormControlLabel control={<Switch onChange={switchHandler} />} label="Enable editing" />
-                            <TextField id="staff_id_input" label="Staff ID" value={staffID} disabled={!isEditing}
+                            <TextField id="staff_id_input" label="Staff ID" value={staffID} disabled={!isEditing} error={staffIDError}
                                 onChange={functionUtils.handleSetInput(setStaffID)} />
-                            <TextField id="staff_name_input" label="Staff Name" value={staffName} disabled={!isEditing}
+                            <TextField id="staff_name_input" label="Staff Name" value={staffName} disabled={!isEditing} error={staffNameError}
                                 onChange={functionUtils.handleSetInput(setStaffName)} />
-                            <TextField id="staff_phone_number_input" label="Staff Phone Number" value={staffPhoneNumber} disabled={!isEditing}
+                            <TextField id="staff_phone_number_input" label="Staff Phone Number" value={staffPhoneNumber} disabled={!isEditing} error={staffPhoneError}
                                 onChange={functionUtils.handleSetInput(setStaffPhoneNumber)} />
-                            <TextField id="staff_email_input" label="Staff Email" value={staffEmail} disabled={!isEditing}
+                            <TextField id="staff_email_input" label="Staff Email" value={staffEmail} disabled={!isEditing} error={staffEmailError}
                                 onChange={functionUtils.handleSetInput(setStaffEmail)} />
                             <FormControl fullWidth>
-                                <InputLabel id="staff_role_label">Role</InputLabel>
+                                <InputLabel id="staff_role_label" required>Role</InputLabel>
                                 <Select
                                     labelId="staff_role_label"
                                     label="Role"
                                     id="staff_role_select"
                                     value={staffRole}
                                     onChange={functionUtils.handleSetInput(setStaffRole)}
+                                    error={staffRoleError}
+                                    required
                                 >
                                     {staffRoleOptions.map((option) => (
                                         <MenuItem key={option.value} value={option.value}>
@@ -261,13 +314,7 @@ export function Staff() {
                                 </Select>
                             </FormControl>
                             <div id="button_update" style={{ marginTop: 15, float: 'right' }}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleSubmit}
-                                >
-                                    {t('button_update')}
-                                </Button>
+                                <Button onClick={handleSubmit}>{t('button_update')}</Button>
                             </div>
                         </FormGroup>
                     </Box>
@@ -276,16 +323,3 @@ export function Staff() {
         </div>
     );
 };
-//                         <TextField disabled={!areaNameEditable} id='area_name' onChange={functionUtils.handleSetInput(setAreaName)} value={areaName} label="Area Name" />
-//                         <TextField disabled={!areaCapacityEditable} id='area_capacity' type="number" onChange={functionUtils.handleSetInput(setAreaCapacity)} label="Area Maximun Capacity" value={areaCapacity} />
-//                         <FormControlLabel control={
-//                             <Checkbox disabled={!areaAvialableEditable} id='area_avialable' onChange={handleCheckBoxChange} checked={areaAvialable} />
-//                         } label="Area Avialable" />
-//                         <Button disabled={!saveButtonEditable} onClick={updateArea}>Update</Button>
-//                     </FormGroup>
-//                 </Box>
-//             </Modal>
-//             </div>
-//         </div>
-//     );
-// };
