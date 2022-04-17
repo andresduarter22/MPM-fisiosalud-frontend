@@ -28,7 +28,7 @@ export function Patients() {
     const [patientName, setPatientName] = useState('');
     const [patientEmail, setPatientEmail] = useState('');
     const [patientNickname, setPatientNickname] = useState('');
-    const [patientBirthday, setPatientBirthday] = useState('2022-04-12');
+    const [patientBirthday, setPatientBirthday] = useState(functionUtils.getToday());
     const [patientPhoneNumber, setPatientPhoneNumber] = useState('');
     const [patientAddress, setPatientAddress] = useState('');
     const [referenceContactName, setReferenceContactName] = useState('');
@@ -136,7 +136,7 @@ export function Patients() {
         setPatientName('');
         setPatientEmail('');
         setPatientNickname('');
-        setPatientBirthday('');
+        setPatientBirthday(functionUtils.getToday());
         setPatientPhoneNumber('');
         setPatientAddress('');
         setReferenceContactName('');

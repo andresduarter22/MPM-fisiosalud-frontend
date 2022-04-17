@@ -82,5 +82,6 @@
     "button_add_new_staff": "Add new Staff",
     "button_update": "Update",
     "button_create": "Create",
-    "button_delete": "Delete"
+    "button_delete": "Delete",
+    "button_add_new_treatment": "Add new Treatment"
 }

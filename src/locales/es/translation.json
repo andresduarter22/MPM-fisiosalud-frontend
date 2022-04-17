@@ -82,5 +82,6 @@
     "button_add_new_staff": "Añadir nuevo personal",
     "button_update": "Actualizar",
     "button_create": "Crear",
-    "button_delete": "Eliminar"
+    "button_delete": "Eliminar",
+    "button_add_new_treatment": "Añadir nuevo tratamiento"
 }
