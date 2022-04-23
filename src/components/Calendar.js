@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import '../styles/App.css';
 import Scheduler from "react-mui-scheduler";
+
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -10,7 +12,7 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Modal from '@mui/material/Modal';
 import InputLabel from '@mui/material/InputLabel';
-import { FormGroup, TextField } from '@mui/material';
+import { FormGroup, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import TherapyRequests from '../requests/therapyRequests.js';
 import TreatmentsRequests from '../requests/treatmentsRequests.js';
 import PatientListRequests from '../requests/patientListRequests.js';
@@ -25,11 +27,13 @@ export function Calendar() {
     const [state, setState] = useState(calendarProps);
     const [openCreate, setOpenCreate] = useState(false);
     const [therapiesList, setTherapiesList] = useState([]);
+    const [therapyAmount, setTherapyAmount] = useState(10);
 
     const [treatmentTitleError, setTreatmentTitleError] = useState(false);
     const [patientNameError, setPatientNameError] = useState(false);
     const [workingAreaNameError, setWorkingAreaNameError] = useState(false);
     const [therapyDateError, setTherapyDateError] = useState(false);
+    const [therapyAmountError, setTherapyAmountError] = useState(false);
 
     const [treatmentTitle, setTreatmentTitle] = useState('');
     const [treatmentBasicInfo, setTreatmentBasicInfo] = useState('');
@@ -40,11 +44,46 @@ export function Calendar() {
     const [therapyDate, setTherapyDate] = useState(functionUtils.getToday());
     const [treatmentAdditionalInfo, setTreatmentAdditionalInfo] = useState('');
 
+    const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+        "& .MuiToggleButtonGroup-grouped": {
+            margin: theme.spacing(0.2),
+            border: 0,
+            "&.Mui-disabled": {
+                border: 0
+            }
+        }
+    }));
+    const [selectedDays, setSelectedDays] = useState(() => []);
+
+    const handleFormat = (event, newFormats) => {
+      setSelectedDays(newFormats);
+      console.log(newFormats);
+    };
     const loadTherapies = async () => {
         try {
             const therapies = await TherapyRequests.getTherapyList();
-            console.log(therapies);
-            setTherapiesList(therapies);
+            const events = [];
+            await Promise.all(therapies.map(async (therapy) => {
+                const event = {
+                    id: therapy._id,
+                    area_id: therapy.area_id,
+                    label: "Therapy: " + therapy.title,
+                    groupLabel: "Dr Shaun Murphy",
+                    user: "Dr Shaun Murphy",
+                    color: "#f28f6a",
+                    startHour: functionUtils.getCurrentHour(),
+                    endHour: functionUtils.calculateEndHour(functionUtils.getCurrentHour(), 60),
+                    date: therapy.date,
+                    createdAt: new Date(),
+                    createdBy: "Kristina Mayer",
+                    description: therapy.description,
+                    patient: therapy.patient,
+                    workingArea: therapy.workingArea,
+                    additionalInfo: therapy.additionalInfo,
+                };
+                events.push(event);
+            }));
+            setTherapiesList(events);
         } catch (error) {
             console.log(error);
         };
@@ -82,9 +121,7 @@ export function Calendar() {
         };
     };
 
-
     const handleOpenCreate = async () => {
-        setIsLoaded(false);
         setOpenCreate(true);
         await loadPatientsList();
         await loadWorkingAreasList();
@@ -126,26 +163,22 @@ export function Calendar() {
         };
         if (openCreate) {
             const treatmentID = await TreatmentsRequests.insertTreatment(JSON.stringify(requestBodyTreatment));
-            const requestBodyTherapy = {
-                body: {
-                    date: therapyDate,
-                    area_id: workingAreaName,
-                    additional_info: "",
-                },
-                filter: {}
-            };
-            console.log(requestBodyTherapy);
-            const therapyID = await TherapyRequests.insertTherapy(JSON.stringify(requestBodyTherapy));
+            const therapiesList = []
+            functionUtils.generateTherapyList(functionUtils.getToday(), 10, ["2", "4"], workingAreaName).map(async(body) => {
+                const requestBody = {
+                    body: body,
+                    filter: {}
+                }
+                therapiesList.push(await TherapyRequests.insertTherapy(JSON.stringify(requestBody)));
+                });
             const requestBodyTherapyList = {
                 body: {
-                    therapies: [therapyID]
+                    therapies: therapiesList
                 },
                 filter: {
                     _id: treatmentID[0]._id,
                 }
             };
-            console.log(treatmentID[0]._id);
-            console.log(therapyID);
             await TreatmentsRequests.updateTreatment(JSON.stringify(requestBodyTherapyList));
         }
         handleClose();
@@ -189,15 +222,15 @@ export function Calendar() {
     };
 
     useEffect(() => {
-        // const fetchTherapies = async () => {
-        //     await loadTherapies();
-        // };
-        // fetchTherapies();
+        const fetchTherapies = async () => {
+            await loadTherapies();
+        };
+        fetchTherapies();
         setCalendar();
-    });
+    }, []);
 
     if (!isLoaded) return <div>Loading...</div>;
-
+    
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -245,6 +278,7 @@ export function Calendar() {
                             value={treatmentBasicInfo}
                             onChange={functionUtils.handleSetInput(setTreatmentBasicInfo)} />
                         <FormControl fullWidth>
+                            {/* TODO: autocomplete component */}
                             <InputLabel id="patient_list_label" required>{t('patient_list_label')}</InputLabel>
                             <Select
                                 labelId="patient_list_label"
@@ -294,6 +328,45 @@ export function Calendar() {
                             }}
                         />
                         <TextField
+                            fullWidth
+                            id='patient_id_input_create'
+                            label={t('label_patient_id')}
+                            value={therapyAmount}
+                            type="number"
+                            error={therapyAmountError}
+                            sx={{ width: 220 }}
+                            required
+                            onChange={functionUtils.handleSetInput(setTherapyAmount)} />
+                        <StyledToggleButtonGroup
+                            size="small"
+                            value={selectedDays}
+                            onChange={handleFormat}
+                            aria-label="text formatting"
+                        >
+                            <ToggleButton value="1">
+                                <p>MOn</p>
+                            </ToggleButton>
+                            <ToggleButton value="2">
+                                <p>TUE</p>
+                            </ToggleButton>
+                            <ToggleButton value="3">
+                                <p>WES</p>
+                            </ToggleButton>
+                            <ToggleButton value="4">
+                                <p>THu</p>
+                            </ToggleButton>
+                            <ToggleButton value="5">
+                                <p>FRI</p>
+                            </ToggleButton>
+                            <ToggleButton value="6">
+                                <p>SAT</p>
+                            </ToggleButton>
+                            <ToggleButton value="0">
+                                <p>SUN</p>
+                            </ToggleButton>
+   
+                        </StyledToggleButtonGroup>
+                        <TextField
                             id='additional_info_input'
                             label={t('label_additional_info')}
                             multiline
@@ -304,6 +377,6 @@ export function Calendar() {
                     </FormGroup>
                 </Box>
             </Modal>
-        </div>
+        </div >
     )
 }
