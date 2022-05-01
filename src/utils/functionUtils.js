@@ -24,50 +24,86 @@ const getCurrentHour = () => {
     return `${hh}:${mm} ${aaa}`;
 };
 
-const calculateEndHour = (startHour, durationMin) => {
-    const startHourReplaced = startHour.replace(':', ' ');
-    const startHourSplit = startHourReplaced.split(' ');
-    const startHourHour = parseInt(startHourSplit[0]);
-    const startHourMin = parseInt(startHourSplit[1]);
-    const startHourAMPM = startHourSplit[2];
-    const startHourTotalMinutes = (startHourHour * 60) + startHourMin;
-    const endHourTotalMinutes = startHourTotalMinutes + durationMin;
-    let endHourHour = startHourHour + Math.floor(durationMin / 60);
-    const endHourMin = endHourTotalMinutes % 60;
-    if (startHourMin > endHourMin && startHourHour <= 22) {
-        endHourHour += 1;
-    } else if (startHourMin > endHourMin && startHourHour === 23) {
-        endHourHour = 0;
-    }
-    const endHour = `${endHourHour}:${endHourMin}`;
-    let endHourAMPM = startHourAMPM
-    if (endHourHour > 12) {
-        endHourAMPM = 'PM';
-    } else if (endHourHour === 12) {
-        endHourAMPM = 'PM';
-    } else if (endHourHour === 0) {
-        endHourAMPM = 'AM';
-    }
-    return `${endHour} ${endHourAMPM}`;
+const hourPRAM = (hour) => {
+    const today = hour.split(':');
+    const hh = today[0];
+    const mm = today[1];
+    const aaa = hh >= 12 ? 'PM' : 'AM';
+    return `${hh}:${mm}:00`;
 };
-const generateTherapyList = (startDate, therapyAmount, dayNamesList, workingAreaID) => {
+
+const calculateEndHour = (startHour, durationMin) => {
+    // console.log(startHour);
+    // console.log(durationMin)
+    // const startHourReplaced = startHour.replace(':', ' ');
+    // const startHourSplit = startHourReplaced.split(' ');
+    // const startHourHour = parseInt(startHourSplit[0]);
+    // const startHourMin = parseInt(startHourSplit[1]);
+    // const startHourTotalMinutes = (startHourHour * 60) + startHourMin;
+    // const endHourTotalMinutes = startHourTotalMinutes + durationMin;
+    // let endHourHour = startHourHour + Math.floor(durationMin / 60);
+    // const endHourMin = endHourTotalMinutes % 60;
+    // if (startHourMin > endHourMin && startHourHour <= 22) {
+    //     endHourHour += 1;
+    // } else if (startHourMin > endHourMin && startHourHour === 23) {
+    //     endHourHour = 0;
+    // }
+    // const endHour = `${endHourHour}:${endHourMin}`;
+    let end = new Date(startHour);
+    console.log("utils: ", startHour)
+    end.setMinutes(end.getMinutes() + durationMin);
+    return `${end.toISOString()}`;
+};
+
+const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAreaID, therapyTime="00:00:00", therapyDuration) => {
     const therapyList = [{
         date: startDate,
         area_id: workingAreaID,
+        time: therapyTime,
     }];
-    let currentDate = new Date(startDate);
+    let currentDate = nextDate(new Date(startDate));
+    const requestedDays = organizeTherapies(therapyBatches);
     while (therapyList.length < therapyAmount) {
-        currentDate = nextDate(currentDate);
-        if (dayNamesList.includes(currentDate.getDay().toString())) {
-            const temp = {
-                date: currentDate.toISOString().substring(0, 10),
-                area_id: workingAreaID,
-            };
-            therapyList.push(temp);
+        if (currentDate.getDay().toString() in requestedDays) {
+            for (const time of requestedDays[currentDate.getDay().toString()]) {
+                therapyList.push({
+                    date: currentDate.toISOString().substring(0, 10),
+                    area_id: workingAreaID,
+                    time: time,
+                    duration: therapyDuration
+                });
+            }
         }
+        currentDate = nextDate(currentDate);
+    }
+    console.log(therapyList);
+    return therapyList;
+};
+
+const organizeTherapies = (therapyBatches) => {
+    const requestedDaysWithHours = {
+        0: [],
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: [],
+        6: []
     }
 
-    return therapyList;
+    for (const therapyBatch of therapyBatches) {
+        for (const day of therapyBatch.days) {
+            if (day in requestedDaysWithHours) {
+                requestedDaysWithHours[day].push(hourPRAM(therapyBatch.time));
+            }
+        }
+    }
+    for (const day in requestedDaysWithHours) {
+        if (requestedDaysWithHours[day].length === 0) {
+            delete requestedDaysWithHours[day];
+        }
+    }
+    return requestedDaysWithHours;
 }
 
 const nextDate = (date) => {

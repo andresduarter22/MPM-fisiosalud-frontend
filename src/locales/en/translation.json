@@ -73,6 +73,19 @@
     "label_reference_contact_number": "Reference Contact Phone Number",
     "label_reference_doctor": "Reference Doctor",
     "label_old_id": "Old ID",
+    "label_therapy_time": "Therapy Time",
+    "label_monday": "MON",
+    "label_tuesday": "TUE",
+    "label_wednesday": "WED",
+    "label_thursday": "THU",
+    "label_friday": "FRI",
+    "label_saturday": "SAT",
+    "label_sunday": "SUN",
+    "title_add_new_treatment": "Add a Treatment",
+    "label_treatment_title": "Treatment Title",
+    "label_patient_list": "Patients",
+    "label_working_area_list": "Working Areas",
+    "label_therapy_date": "Therapy Date",
 
     "switch_enable_edit": "Enable Edit",
 
@@ -83,5 +96,7 @@
     "button_update": "Update",
     "button_create": "Create",
     "button_delete": "Delete",
-    "button_add_new_treatment": "Add new Treatment"
+    "button_add_new_treatment": "Add new Treatment",
+
+    "input_basic_info": "Basic Information"
 }

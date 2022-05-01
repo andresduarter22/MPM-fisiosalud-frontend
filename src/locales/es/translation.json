@@ -36,6 +36,7 @@
     "button_add_new_patient": "Añadir un nuevo paciente",
     "title_add_new_patient": "Añadir un nuevo paciente",
     "title_update_patient": "Actualizar paciente",
+    "title_add_new_treatment": "Añadir un nuevo tratamiento",
 
     "columnMenu_Unsort": "Sin clasificar",
     "columnMenu_SortAsc": "Ordenar en orden ascendente",
@@ -73,6 +74,18 @@
     "label_reference_contact_number": "Número de teléfono",
     "label_reference_doctor": "Médico de referencia",
     "label_old_id": "ID antiguo",
+    "label_therapy_time": "Hora de terapia",
+    "label_monday": "LUN",
+    "label_tuesday": "MAR",
+    "label_wednesday": "MIE",
+    "label_thursday": "JUE",
+    "label_friday": "VIE",
+    "label_saturday": "SAB",
+    "label_sunday": "DOM",
+    "label_treatment_title": "Título del tratamiento",
+    "label_patient_list": "Lista de pacientes",
+    "label_working_area_list": "Lista de áreas de trabajo",
+    "label_therapy_date": "Fecha de terapia",
 
     "switch_enable_edit": "Habilitar edición",
 
@@ -83,5 +96,7 @@
     "button_update": "Actualizar",
     "button_create": "Crear",
     "button_delete": "Eliminar",
-    "button_add_new_treatment": "Añadir nuevo tratamiento"
+    "button_add_new_treatment": "Añadir nuevo tratamiento",
+
+    "input_basic_info": "Información básica"
 }
