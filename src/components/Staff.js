@@ -14,13 +14,14 @@ import Select from '@mui/material/Select';
 import Modal from '@mui/material/Modal';
 import FormControl from '@mui/material/FormControl';
 import { FormGroup, TextField, FormControlLabel } from '@mui/material';
-import staffListRequests from '../requests/staffRequests.js'
+import requester from '../apiRequester/Requester.js';
 import functionUtils from '../utils/functionUtils.js'
 import localizedComponents from '../utils/localizedComponents.js'
 import '../styles/App.css';
 
 export function Staff() {
     const [t] = useTranslation();
+    const staffEndpoint = "staff";
     const [elements, setElements] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -32,9 +33,11 @@ export function Staff() {
     const [staffEmailError, setStaffEmailError] = useState(false);
     const [staffPhoneError, setStaffPhoneError] = useState(false);
     const [staffRoleError, setStaffRoleError] = useState(false);
+    const [staffPasswordError, setStaffPasswordError] = useState(false);
 
     const [staffID, setStaffID] = useState('');
     const [staffName, setStaffName] = useState('');
+    const [staffPassword, setStaffPassword] = useState('');
     const [staffPhoneNumber, setStaffPhoneNumber] = useState('');
     const [staffEmail, setStaffEmail] = useState('');
     const [updateID, setUpdateID] = useState('');
@@ -48,13 +51,13 @@ export function Staff() {
     const handleOpenCreate = () => setOpenCreate(true);
 
     const handleOpenUpdate = async (updateStaffID) => {
-        const areaInfo = await getStaff(updateStaffID);
-        setStaffID(areaInfo._id);
+        const staffInfo = await getStaff(updateStaffID);
+        setStaffID(staffInfo._id);
         setUpdateID(updateStaffID);
-        setStaffName(areaInfo.staff_name);
-        setStaffPhoneNumber(areaInfo.staff_phone_number);
-        setStaffEmail(areaInfo.staff_email);
-        setStaffRole(areaInfo.staff_role);
+        setStaffName(staffInfo.staff_name);
+        setStaffPhoneNumber(staffInfo.staff_phone_number);
+        setStaffEmail(staffInfo.staff_email);
+        setStaffRole(staffInfo.staff_role);
         setOpenUpdate(true);
     };
 
@@ -93,7 +96,7 @@ export function Staff() {
                 <GridActionsCellItem
                     icon={<EditIcon />}
                     label={t('button_update')}
-                    // onClick={duplicateUser(params.id)}
+                    onClick={() => { handleOpenUpdate(params.id) }}
                     showInMenu
                 />,
                 <GridActionsCellItem
@@ -108,7 +111,7 @@ export function Staff() {
 
     const loadStaffList = async () => {
         try {
-            const staffList = await staffListRequests.getStaffList();
+            const staffList = await requester.requestGetList(staffEndpoint);
             setElements(staffList)
             setIsLoaded(true)
         } catch (error) {
@@ -121,6 +124,7 @@ export function Staff() {
         setStaffID('');
         setStaffName('');
         setStaffPhoneNumber('');
+        setStaffPassword('');
         setStaffEmail('');
         setStaffRole('');
     };
@@ -162,6 +166,13 @@ export function Staff() {
             setStaffRoleError(false);
             error = false;
         }
+        if (staffPassword === '') {
+            setStaffPasswordError(true);
+            return true;
+        } else {
+            setStaffPasswordError(false);
+            error = false;
+        }
         return error;
     };
 
@@ -172,12 +183,12 @@ export function Staff() {
                 _id: id,
             }
         }
-        await staffListRequests.deleteStaff(JSON.stringify(requestBody));
+        await requester.requestDelete(staffEndpoint, JSON.stringify(requestBody));
         loadStaffList();
     };
 
     const getStaff = async (id) => {
-        return await staffListRequests.getStaff(id);
+        return await requester.requestGet(staffEndpoint, id);
     };
 
     const handleSubmit = async () => {
@@ -187,6 +198,7 @@ export function Staff() {
             body: {
                 _id: staffID,
                 staff_name: staffName,
+                staff_password: staffPassword,
                 staff_phone_number: staffPhoneNumber,
                 staff_email: staffEmail,
                 staff_role: staffRole,
@@ -194,10 +206,10 @@ export function Staff() {
             filter: {}
         };
         if (openCreate) {
-            await staffListRequests.insertStaff(JSON.stringify(requestBody));
+            await requester.requestInsert(staffEndpoint, JSON.stringify(requestBody));
         } else if (openUpdate) {
             requestBody.filter._id = updateID;
-            await staffListRequests.updateStaff(JSON.stringify(requestBody));
+            await requester.requestUpdate(staffEndpoint, JSON.stringify(requestBody));
         }
         handleClose();
         loadStaffList();
@@ -241,6 +253,8 @@ export function Staff() {
                                 onChange={functionUtils.handleSetInput(setStaffID)} />
                             <TextField id="staff_name_input" label="Staff Name" value={staffName} error={staffNameError} required
                                 onChange={functionUtils.handleSetInput(setStaffName)} />
+                            <TextField id="staff_password_input" label="Staff Password" type="password" value={staffPassword} error={staffPasswordError} required
+                                onChange={functionUtils.handleSetInput(setStaffPassword)} />
                             <TextField id="staff_phone_number_input" label="Staff Phone Number" value={staffPhoneNumber} error={staffPhoneError} required
                                 onChange={functionUtils.handleSetInput(setStaffPhoneNumber)} />
                             <TextField id="staff_email_input" label="Staff Email" value={staffEmail} error={staffEmailError} required
@@ -291,6 +305,8 @@ export function Staff() {
                                 onChange={functionUtils.handleSetInput(setStaffID)} />
                             <TextField id="staff_name_input" label="Staff Name" value={staffName} disabled={!isEditing} error={staffNameError}
                                 onChange={functionUtils.handleSetInput(setStaffName)} />
+                            <TextField id="staff_password_input" label="Staff Password" type="password" value={staffPassword} error={staffPasswordError} required
+                                onChange={functionUtils.handleSetInput(setStaffPassword)} />
                             <TextField id="staff_phone_number_input" label="Staff Phone Number" value={staffPhoneNumber} disabled={!isEditing} error={staffPhoneError}
                                 onChange={functionUtils.handleSetInput(setStaffPhoneNumber)} />
                             <TextField id="staff_email_input" label="Staff Email" value={staffEmail} disabled={!isEditing} error={staffEmailError}

@@ -21,7 +21,25 @@ const calendarProps = {
         showSearchBar: true,
         showSwitchModeButtons: true,
         showDatePicker: true
-    }
+    },
+    month: {
+        weekDays: [0, 1, 2, 3, 4, 5, 6],
+        weekStartOn: 6,
+        startHour: 0,
+        endHour: 24,
+    },
+    week: {
+        weekDays: [0, 1, 2, 3, 4, 5, 6],
+        weekStartOn: 6,
+        startHour: 0,
+        endHour: 24,
+        step: 15
+    },
+    day:{
+        startHour: 0,
+        endHour: 24,
+        step: 15
+    },
 }
 
 export default calendarProps;

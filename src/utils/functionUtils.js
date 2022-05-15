@@ -20,46 +20,30 @@ const getCurrentHour = () => {
     const today = new Date();
     const hh = String(today.getHours()).padStart(2, '0');
     const mm = String(today.getMinutes()).padStart(2, '0');
-    const aaa = today.getHours() >= 12 ? 'PM' : 'AM';
-    return `${hh}:${mm} ${aaa}`;
+    return `${hh}:${mm}:00`;
 };
 
 const hourPRAM = (hour) => {
     const today = hour.split(':');
     const hh = today[0];
     const mm = today[1];
-    const aaa = hh >= 12 ? 'PM' : 'AM';
     return `${hh}:${mm}:00`;
 };
 
 const calculateEndHour = (startHour, durationMin) => {
-    // console.log(startHour);
-    // console.log(durationMin)
-    // const startHourReplaced = startHour.replace(':', ' ');
-    // const startHourSplit = startHourReplaced.split(' ');
-    // const startHourHour = parseInt(startHourSplit[0]);
-    // const startHourMin = parseInt(startHourSplit[1]);
-    // const startHourTotalMinutes = (startHourHour * 60) + startHourMin;
-    // const endHourTotalMinutes = startHourTotalMinutes + durationMin;
-    // let endHourHour = startHourHour + Math.floor(durationMin / 60);
-    // const endHourMin = endHourTotalMinutes % 60;
-    // if (startHourMin > endHourMin && startHourHour <= 22) {
-    //     endHourHour += 1;
-    // } else if (startHourMin > endHourMin && startHourHour === 23) {
-    //     endHourHour = 0;
-    // }
-    // const endHour = `${endHourHour}:${endHourMin}`;
     let end = new Date(startHour);
-    console.log("utils: ", startHour)
     end.setMinutes(end.getMinutes() + durationMin);
     return `${end.toISOString()}`;
 };
 
-const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAreaID, therapyTime="00:00:00", therapyDuration) => {
+const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAreaID, therapyDuration, therapyTime="00:00:00" ) => {
     const therapyList = [{
         date: startDate,
         area_id: workingAreaID,
         time: therapyTime,
+        therapy_status: "open",
+        duration: therapyDuration,
+        
     }];
     let currentDate = nextDate(new Date(startDate));
     const requestedDays = organizeTherapies(therapyBatches);
@@ -70,13 +54,13 @@ const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAr
                     date: currentDate.toISOString().substring(0, 10),
                     area_id: workingAreaID,
                     time: time,
+                    therapy_status: "open",
                     duration: therapyDuration
                 });
             }
         }
         currentDate = nextDate(currentDate);
     }
-    console.log(therapyList);
     return therapyList;
 };
 

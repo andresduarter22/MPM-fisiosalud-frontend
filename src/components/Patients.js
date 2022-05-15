@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from "react-i18next";
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -14,7 +14,14 @@ import { FormGroup, TextField, FormControlLabel } from '@mui/material';
 import patientListRequests from '../requests/patientListRequests.js';
 import functionUtils from '../utils/functionUtils.js'
 import localizedComponents from '../utils/localizedComponents.js'
+import Webcam from "react-webcam";
 import '../styles/App.css';
+
+const videoConstraints = {
+    width: 720,
+    height: 360,
+    facingMode: "user"
+};
 
 export function Patients() {
     const [t] = useTranslation();
@@ -46,6 +53,10 @@ export function Patients() {
     const [patientAddressError, setPatientAddressError] = useState(false);
     const [referenceContactNameError, setReferenceContactNameError] = useState(false);
     const [referenceContactNumberError, setReferenceContactNumberError] = useState(false);
+
+    const [isCaptureEnable, setCaptureEnable] = useState(false);
+    const webcamRef = useRef(null);
+    const [url, setUrl] = useState(null);
 
     const handleOpenCreate = () => setOpenCreate(true);
     const handleOpenUpdate = async (updatePatientID) => {
@@ -119,6 +130,13 @@ export function Patients() {
             ],
         },
     ];
+
+    const capture = useCallback(() => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        if (imageSrc) {
+            setUrl(imageSrc);
+        }
+    }, [webcamRef]);
 
     const loadPatientsList = async () => {
         try {
@@ -248,6 +266,7 @@ export function Patients() {
                 patient_address: patientAddress,
                 reference_contact_name: referenceContactName,
                 reference_contact_number: referenceContactNumber,
+                patient_image: url,
             },
             filter: {}
         };
@@ -409,6 +428,44 @@ export function Patients() {
                                     onChange={functionUtils.handleSetInput(setOldID)} />
                             </Grid>
                         </Grid>
+
+                        {isCaptureEnable || (
+                            <Button onClick={() => setCaptureEnable(true)}>Enable cam</Button>
+                        )}
+                        {isCaptureEnable && (
+                            <>
+                                <div>
+                                    <Button onClick={() => setCaptureEnable(false)}>Disable cam</Button>
+                                </div>
+                                <div>
+                                    <Webcam
+                                        audio={false}
+                                        width={540}
+                                        height={360}
+                                        ref={webcamRef}
+                                        screenshotFormat="image/jpeg"
+                                        videoConstraints={videoConstraints}
+                                    />
+                                </div>
+                                <Button onClick={capture}>Take picture</Button>
+                            </>
+                        )}
+                        {url && (
+                            <>
+                                <div>
+                                    <Button
+                                        onClick={() => {
+                                            setUrl(null);
+                                        }}
+                                    >
+                                        Delete Image
+                                    </Button>
+                                </div>
+                                <div>
+                                    <img src={url} alt="Screenshot" />
+                                </div>
+                            </>
+                        )}
                         <TextField
                             id='additional_info_input'
                             label={t('label_additional_info')}
