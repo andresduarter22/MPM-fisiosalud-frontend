@@ -11,6 +11,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Switch from '@mui/material/Switch';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import FormControl from '@mui/material/FormControl';
 import { FormGroup, TextField, FormControlLabel } from '@mui/material';
@@ -224,10 +226,10 @@ export function Staff() {
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }}>
+                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke', marginTop: 15, marginBottom: 15 }}>
                     {t('title_staff_list')}
                 </Button>
-                <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_staff')} </Button>
+                {/* <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_staff')} </Button> */}
             </div>
             <div style={{ height: 600, width: '100%', background: 'white' }}>
                 <DataGrid
@@ -246,9 +248,10 @@ export function Staff() {
                     aria-describedby="modal-modal-content" >
                     <Box className='modal-box'>
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Create Staff Member
+                            {t('title_create_staff_member')}
                         </Typography>
                         <FormGroup>
+                            {/* TODO: fix translations */}
                             <TextField id="staff_id_input" label="Staff ID" value={staffID} error={staffIDError} required
                                 onChange={functionUtils.handleSetInput(setStaffID)} />
                             <TextField id="staff_name_input" label="Staff Name" value={staffName} error={staffNameError} required
@@ -297,7 +300,7 @@ export function Staff() {
                     aria-describedby="modal-modal-content" >
                     <Box className='modal-box'>
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Update Staff Member
+                            {t('title_update_staff_member')}
                         </Typography>
                         <FormGroup>
                             <FormControlLabel control={<Switch onChange={switchHandler} />} label="Enable editing" />
@@ -335,6 +338,9 @@ export function Staff() {
                         </FormGroup>
                     </Box>
                 </Modal>
+                <Fab onClick={handleOpenCreate} variant="text" style={{ position: 'absolute', bottom: 10, right:10 }} size="medium" color="secondary">
+                    <AddIcon />
+            </Fab>
             </div>
         </div>
     );

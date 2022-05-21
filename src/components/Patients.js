@@ -9,6 +9,8 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import { FormGroup, TextField, FormControlLabel } from '@mui/material';
 import patientListRequests from '../requests/patientListRequests.js';
@@ -296,10 +298,10 @@ export function Patients() {
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }}>
+                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke', marginTop: 15, marginBottom: 15 }}>
                     {t('title_patient_list')}
                 </Button>
-                <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_patient')} </Button>
+                {/* <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_patient')} </Button> */}
             </div>
             <div style={{ height: 600, width: '100%', background: 'white' }}>
                 <DataGrid
@@ -596,6 +598,9 @@ export function Patients() {
                     </FormGroup>
                 </Box>
             </Modal>
+            <Fab onClick={handleOpenCreate} variant="text" style={{ position: 'absolute', bottom: 10, right:10 }} size="medium" color="secondary">
+                    <AddIcon />
+            </Fab>
         </div>
     );
 };

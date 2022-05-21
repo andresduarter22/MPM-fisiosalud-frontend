@@ -5,9 +5,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import Switch from '@mui/material/Switch';
 import { FormGroup, TextField, FormControlLabel } from '@mui/material';
@@ -171,12 +171,12 @@ export function ContactListComponent() {
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }}>
+                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke', marginTop: 15, marginBottom: 15 }}>
                     {t('title_contact_list')}
                 </Button>
-                <Fab onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }} size="medium" color="secondary">
-                    <AddIcon /> </Fab>
+                
             </div>
+            
             <div style={{ height: 600, width: '100%', background: 'white' }}>
                 <DataGrid
                     rows={elements}
@@ -241,6 +241,9 @@ export function ContactListComponent() {
                     </FormGroup>
                 </Box>
             </Modal>
+            <Fab onClick={handleOpenCreate} variant="text" style={{ position: 'absolute', bottom: 10, right:10 }} size="medium" color="secondary">
+                    <AddIcon />
+            </Fab>
         </div>
     );
 }

@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Modal from '@mui/material/Modal';
 import Switch from '@mui/material/Switch';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 import '../styles/WorkingAreaList.css';
 import { Checkbox, FormGroup, TextField, FormControlLabel } from '@mui/material';
 import WorkingAreaRequests from '../requests/workingAreaRequests.js';
@@ -184,10 +186,10 @@ export function WorkingAreaListComponent() {
     return (
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }}>
+                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke', marginTop: 15, marginBottom: 15 }}>
                     {t('title_area_list')}
                 </Button>
-                <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_area')} </Button>
+                {/* <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_area')} </Button> */}
             </div>
             <div style={{ height: '100%', width: '100%', background: 'white' }}>
                 <DataGrid
@@ -239,6 +241,9 @@ export function WorkingAreaListComponent() {
                     </FormGroup>
                 </Box>
             </Modal>
+            <Fab onClick={handleOpenCreate} variant="text" style={{ position: 'absolute', bottom: 10, right:10 }} size="medium" color="secondary">
+                    <AddIcon />
+            </Fab>
         </div>
     );
 };
