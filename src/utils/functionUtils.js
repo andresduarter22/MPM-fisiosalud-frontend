@@ -31,6 +31,7 @@ const hourPRAM = (hour) => {
 };
 
 const calculateEndHour = (startHour, durationMin) => {
+    console.log("start hour", startHour);
     let end = new Date(startHour);
     end.setMinutes(end.getMinutes() + durationMin);
     return `${end.toISOString()}`;

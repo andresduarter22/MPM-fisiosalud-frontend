@@ -24,29 +24,9 @@ export function Calendar() {
     const [t] = useTranslation();
     const [isLoaded, setIsLoaded] = useState(false);
     const [openCreate, setOpenCreate] = useState(false);
-    const [openValidateFace, setOpenValidateFace] = useState(false);
+    
     const [therapiesList, setTherapiesList] = useState([]);
 
-    const [isCaptureEnable, setCaptureEnable] = useState(false);
-    const webcamRef = useRef(null);
-    const [url, setUrl] = useState(null);
-    const [imageValidated, setImageValidated] = useState("Not validated");
-
-    
-    const videoConstraints = {
-        width: 720,
-        height: 360,
-        facingMode: "user"
-    };
-
-
-
-    const capture = useCallback(() => {
-        const imageSrc = webcamRef.current.getScreenshot();
-        if (imageSrc) {
-            setUrl(imageSrc);
-        }
-    }, [webcamRef]);
 
     const loadTherapies = async () => {
         try {
@@ -78,15 +58,12 @@ export function Calendar() {
             await loadTherapies();
         };
         setOpenCreate(false);
-        setOpenValidateFace(false);
         cleanModalFields();
         fetchTherapies();
         setIsLoaded(true);
     };
 
-    const handleOpenValidateFace = async () => {
-        setOpenValidateFace(true);
-    };
+    
 
     function cleanModalFields() { };
 
@@ -103,27 +80,7 @@ export function Calendar() {
     if (!isLoaded) return <div>Loading...</div>;
     
 
-    const handleValidateFace = async () => {
-        setIsLoaded(false);
-        const therapyBody = {
-            body: {
-                date: functionUtils.getToday(),
-                area_id: "0",
-                time: "00:00:00",
-                therapy_status: "open",
-                action: "validate",
-                patient_image: url,
-            },
-            filter: { _id: "6279b3a02267b7275d4f36e1" }
-        };
-        const response = await TherapyRequests.updateTherapy(JSON.stringify(therapyBody))
-        if (response.result) {
-            setImageValidated(response.id);
-        } else {
-            setImageValidated(response.message);
-        }
-        setIsLoaded(true);
-    };
+
 
     function CustomEditor({scheduler}) {
         console.log(scheduler)
@@ -140,14 +97,15 @@ export function Calendar() {
                 <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }}>
                     {t('title_calendar')}
                 </Button>
-                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }} onClick={() => { handleOpenValidateFace() }}>
+                {/* <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }} onClick={() => { handleOpenValidateFace() }}>
                     Validate Face
-                </Button>
+                </Button> */}
                 <Button onClick={() => { handleOpenCreate() }} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_treatment')} </Button>
             </div>
             <div style={{ height: '100%', width: '100%', background: 'white' }}>
                 <Scheduler
                     customEditor={(scheduler) => <CustomEditor scheduler={scheduler} />}
+                    viewerExtraComponent={(fields, event) => <CustomViewer fields={fields} setIsLoaded={setIsLoaded} event={event}/>}
                     events={therapiesList}
                     month={calendarProps.month}
                     week={calendarProps.week}
@@ -164,62 +122,155 @@ export function Calendar() {
                     <CreateTreatment t={t} setIsLoaded={setIsLoaded} handleClose={handleClose} />
                 </Box>
             </Modal>
+            
+        </div >
+    )
+}
+function ValidateWithCamera({setIsLoaded, therapyId}) {
+    const { t } = useTranslation();
+    const webcamRef = useRef(null);
+    const [url, setUrl] = useState(null);
+    const [imageValidated, setImageValidated] = useState("Not validated");
+    const capture = useCallback(() => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        if (imageSrc) {
+            setUrl(imageSrc);
+        }
+    }, [webcamRef]);
+    const handleValidateFace = async (therapyId) => {
+        setIsLoaded(false);
+        const therapyBody = {
+            body: {
+                date: functionUtils.getToday(),
+                area_id: "0",
+                time: "00:00:00",
+                therapy_status: "open",
+                action: "validate",
+                patient_image: url,
+            },
+            filter: { _id: therapyId }
+        };
+        const response = await TherapyRequests.updateTherapy(JSON.stringify(therapyBody))
+        if (response.result) {
+            setImageValidated(response.id);
+        } else {
+            setImageValidated(response.message);
+        }
+        setIsLoaded(true);
+    };
+        
+    const videoConstraints = {
+        width: 720,
+        height: 360,
+        facingMode: "user"
+    };
+
+
+    return (<Box className='modal-box-big'>
+        <Typography id="modal-modal-title" variant="h6" component="h2">
+            {t('title_update_patient')}
+        </Typography>
+        <Typography id="modal-modal-content">
+            ID: {therapyId}
+        </Typography>
+        <FormGroup>
+            {(
+                <>
+                    <div>
+                        <Webcam
+                            audio={false}
+                            width={540}
+                            height={360}
+                            ref={webcamRef}
+                            screenshotFormat="image/jpeg"
+                            videoConstraints={videoConstraints}
+                        />
+                    </div>
+                    <Button onClick={capture}>Take picture</Button>
+                </>
+            )}
+            {url && (
+                <>
+                    <div>
+                        <Button
+                            onClick={() => {
+                                setUrl(null);
+                            }}
+                        >
+                             {/* TODO modificar texto */}
+                            Delete Image
+                        </Button>
+                    </div>
+                    <div>
+                        <img src={url} alt="Screenshot" />
+                    </div>
+                </>
+            )}
+             {/* TODO modificar texto */}
+            <Button onClick={() => handleValidateFace(therapyId) }>Validate Patient's Face</Button>
+        </FormGroup>
+        <Typography> {imageValidated}</Typography>
+    </Box>);
+}
+function CustomViewer({fields, event, setIsLoaded }) {
+    console.log(event)
+    const [ t ] = useTranslation();
+    const [faceValidation, setFaceValidation] = useState(false);
+    const [openValidateFace, setOpenValidateFace] = useState(false);
+    const handleOpenValidateFace = async () => {
+        setOpenValidateFace(true);
+    };
+    const handleClose = () => {
+        setOpenValidateFace(false);
+    }
+    return (
+        <>
+            <Typography variant="h6" component="h2">
+                {event.title}
+            </Typography>
+            <Typography variant="body1" component="p">
+                {/* TODO modificar texto */}
+                {t('label_start')}: {event.start.toString()}
+            </Typography>
+            <Typography variant="body1" component="p">
+                 {/* TODO modificar texto */}
+                End: {event.end.toString()}
+            </Typography>
+            <Button onClick={() => setFaceValidation(!faceValidation)}>
+
+                 {/* TODO modificar texto */}
+                toggle
+            </Button>
+            <PatientValidation faceValidation={faceValidation} handleOpenValidateFace={handleOpenValidateFace} />
             <Modal
                 open={openValidateFace}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-content" >
-                <Box className='modal-box-big'>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        {t('title_update_patient')}
-                    </Typography>
-                    <FormGroup>
-                        {isCaptureEnable || (
-                            <Button onClick={() => setCaptureEnable(true)}>Enable cam</Button>
-                        )}
-                        {isCaptureEnable && (
-                            <>
-                                <div>
-                                    <Button onClick={() => setCaptureEnable(false)}>Disable cam</Button>
-                                </div>
-                                <div>
-                                    <Webcam
-                                        audio={false}
-                                        width={540}
-                                        height={360}
-                                        ref={webcamRef}
-                                        screenshotFormat="image/jpeg"
-                                        videoConstraints={videoConstraints}
-                                    />
-                                </div>
-                                <Button onClick={capture}>Take picture</Button>
-                            </>
-                        )}
-                        {url && (
-                            <>
-                                <div>
-                                    <Button
-                                        onClick={() => {
-                                            setUrl(null);
-                                        }}
-                                    >
-                                        Delete Image
-                                    </Button>
-                                </div>
-                                <div>
-                                    <img src={url} alt="Screenshot" />
-                                </div>
-                            </>
-                        )}
-                        <Button onClick={handleValidateFace}>Validate Patient's Face</Button>
-                    </FormGroup>
-                    <Typography> {imageValidated}</Typography>
-                </Box>
+                <ValidateWithCamera setIsLoaded={setIsLoaded} therapyId={event.event_id}/>
             </Modal>
-        </div >
-    )
+        </>
+    );
 }
-
+function PatientValidation({faceValidation, handleOpenValidateFace}) {
+    const [ t ] = useTranslation();
+    if (faceValidation) {
+        return (
+            <Typography variant="h2" component="p">
+                <Button onClick={handleOpenValidateFace}>
+                    {t('label_open_camera')}
+                </Button>
+            </Typography>
+        );
+    } else {
+        return (
+            <Typography variant="h2" component="p">
+                 {/* TODO modificar texto */}
+                id validation here
+            </Typography>
+        );
+    }
+}
 function CreateTreatment({t, setIsLoaded, handleClose}){
     const [treatmentTitle, setTreatmentTitle] = useState('');
     const [treatmentBasicInfo, setTreatmentBasicInfo] = useState('');
@@ -505,10 +556,11 @@ function CreateTreatment({t, setIsLoaded, handleClose}){
                     ))}
                 </Select>
             </FormControl>
+            {/* TODO: arreglar los nombres */}
             <TextField
                 fullWidth
-                id='patient_id_input_create'
-                label={t('label_patient_id')}
+                id='input_therapy_amount'
+                label={t('label_therapy_amount')}
                 value={therapyAmount}
                 type="number"
                 error={therapyAmountError}
@@ -539,22 +591,15 @@ function CreateTreatment({t, setIsLoaded, handleClose}){
                     shrink: true,
                 }}
             />
-            <br />
-            <br />
-            <br />
-            <br />
             <div>
                 {therapyBatches.map((item, index) => {
                     return (<TherapiesController index={index} item={item} />)
                 })}
             </div>
             <Button onClick={handleAddBatch}>
+                 {/* TODO modificar texto */}
                 <p>ADD BATCH</p>
             </Button>
-            <br />
-            <br />
-            <br />
-            <br />
             <TextField
                 id='additional_info_input'
                 label={t('label_additional_info')}
