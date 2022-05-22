@@ -6,6 +6,7 @@
     "title_settings": "Propiedades",
     "title_working_areas_list": "Áreas de trabajo",
     "title_shop_Article": "Artículos de la Tienda",
+    "title_shop_list": "Lista de Artículos de la Tienda",
     "title_contact_name": "Nombre del contacto",
     "title_contact_phone_number": "Número de télefono",
     "title_contact_email": "Correo electrónico",
@@ -37,6 +38,12 @@
     "title_add_new_patient": "Añadir un nuevo paciente",
     "title_update_patient": "Actualizar paciente",
     "title_add_new_treatment": "Añadir un nuevo tratamiento",
+    "title_article_name": "Nombre del artículo",
+    "title_article_basic_info": "Información básica",
+    "title_article_stock": "Stock Disponible",
+    "title_article_price": "Precio",
+    "title_article_currency": "Moneda",
+    "title_update_shop_item": "Actualizar elemento de la tienda",
 
     "columnMenu_Unsort": "Sin clasificar",
     "columnMenu_SortAsc": "Ordenar en orden ascendente",
@@ -87,6 +94,11 @@
     "label_working_area_list": "Lista de áreas de trabajo",
     "label_therapy_date": "Fecha de terapia",
     "label_enable_editing": "Habilitar edición",
+    "label_shop_item_name": "Nombre del artículo",
+    "label_basic_info": "Información básica",
+    "label_shop_item_stock": "Stock del artículo",
+    "label_shop_item_price": "Precio del artículo",
+    "label_shop_item_currency": "Moneda del Artículo",
 
     "switch_enable_edit": "Habilitar edición",
 

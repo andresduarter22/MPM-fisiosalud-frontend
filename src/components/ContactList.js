@@ -19,7 +19,7 @@ import functionUtils from '../utils/functionUtils.js'
 import localizedComponents from '../utils/localizedComponents.js'
 import '../styles/App.css';
 
-export function ContactListComponent() {
+export function ContactList() {
     const [t] = useTranslation();
     const dataGridLocales = localizedComponents.DatagridLocales();
     const contactListEndpoint = 'contactList';
@@ -65,7 +65,7 @@ export function ContactListComponent() {
                 />,
             ],
         }
-    ]
+    ];
 
     async function handleOpenCreate() { setOpenCreate(true) };
 
@@ -141,6 +141,19 @@ export function ContactListComponent() {
         loadContacList();
     };
 
+    
+    async function cleanModalFields() {
+        setContactName('');
+        setContactPhoneNumber('');
+        setContactEmail('');
+        setContactAddtInfo('');
+        setUpdateTargetID('');
+    };
+    
+    async function enableTextFields(checked) {
+        setIsEditing(checked);
+    };
+
     function validateRequiredFields() {
         let error = false;
         if (contactName === "") {
@@ -160,18 +173,6 @@ export function ContactListComponent() {
         return error;
     };
 
-    function cleanModalFields() {
-        setContactName('');
-        setContactPhoneNumber('');
-        setContactEmail('');
-        setContactAddtInfo('');
-        setUpdateTargetID('');
-    };
-
-    function enableTextFields(checked) {
-        setIsEditing(checked);
-    };
-
     useEffect(() => {
         loadContacList();
     }, []);
@@ -185,7 +186,6 @@ export function ContactListComponent() {
                     style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke', marginTop: 15, marginBottom: 15 }}>
                     {t('title_contact_list')}
                 </Button>
-
             </div>
 
             <div style={{ height: 600, width: '100%', background: 'white' }}>
@@ -194,7 +194,6 @@ export function ContactListComponent() {
                     columns={columns}
                     pageSize={5}
                     rowsPerPageOptions={[5]}
-                    checkboxSelection
                     getRowId={(row) => row._id}
                     localeText={dataGridLocales}
                 />
@@ -254,7 +253,7 @@ export function ContactListComponent() {
                         {t('title_update_contact')}
                     </Typography>
                     <FormGroup>
-                        <FormControlLabel control={<Switch onChange={switchHandler} />} label="Enable editing" />
+                        <FormControlLabel control={<Switch onChange={switchHandler} />} label={t('label_enable_editing')}/>
                         <TextField
                             fullWidth
                             required

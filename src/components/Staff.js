@@ -237,7 +237,6 @@ export function Staff() {
                     columns={columns}
                     pageSize={5}
                     rowsPerPageOptions={[5]}
-                    checkboxSelection
                     getRowId={(row) => row._id}
                     localeText={dataGridLocales}
                 />

@@ -16,7 +16,7 @@ import WorkingAreaRequests from '../requests/workingAreaRequests.js';
 import functionUtils from '../utils/functionUtils.js'
 import localizedComponents from '../utils/localizedComponents.js'
 
-export function WorkingAreaListComponent() {
+export function WorkingArea() {
     const [t] = useTranslation();
     const [elements, setElements] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -197,7 +197,6 @@ export function WorkingAreaListComponent() {
                     columns={columns}
                     pageSize={5}
                     rowsPerPageOptions={[5]}
-                    checkboxSelection
                     getRowId={(row) => row._id}
                     localeText={dataGridLocales}
                 />
