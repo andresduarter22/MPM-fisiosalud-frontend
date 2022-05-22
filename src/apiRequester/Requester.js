@@ -17,13 +17,12 @@ async function request(endpoint, requestOptions, args = '') {
     } else if (response.status === 403) {
         window.location.href = '/';
     } else if (response.status === 401) {
-        const newResponse = await refreshAccessCookie(url, requestOptions);
+        const newResponse = await requestAccessCookieRefresh(url, requestOptions);
         return newResponse.json();
-         
     }
 };
 
-async function login(username, password) {
+async function requestLogin(username, password) {
     const bodyValue = {
         _id: username,
         password: password,
@@ -37,7 +36,7 @@ async function login(username, password) {
     return response;
 };
 
-async function refreshAccessCookie(url, requestOptions) {
+async function requestAccessCookieRefresh(url, requestOptions) {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Authorization', `Bearer ${getCookie('refresh_token')}`);
@@ -102,7 +101,7 @@ async function requestDelete(endpoint, requestBody) {
 
 const exports = {
     request,
-    login,
+    requestLogin,
     requestGetList,
     requestGet,
     requestInsert,

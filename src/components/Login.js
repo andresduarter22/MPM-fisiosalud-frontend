@@ -20,7 +20,7 @@ export function Login() {
     const handleLogin = async () => {
         setIsLoading(true);
         setError('');
-        const response = await requester.login(username, password);
+        const response = await requester.requestLogin(username, password);
         if (response.status === 200) {
             setIsLoggedIn(true);
             const cookies = await response.json();
@@ -39,6 +39,7 @@ export function Login() {
     }
 
     return (
+        // TODO: Fix UI of login page
         <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ height: 100 }}>
                 <h4>{t('login.title')}</h4>

@@ -97,6 +97,7 @@
     "button_update": "Actualizar",
     "button_create": "Crear",
     "button_delete": "Eliminar",
+    "button_edit": "Editar",
     "button_add_new_treatment": "Añadir nuevo tratamiento",
 
     "input_basic_info": "Información básica"

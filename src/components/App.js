@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import '../styles/App.css';
 import { Calendar } from './Calendar.js'
 import { Shop } from './Shop.js'
 import { Patients } from './Patients.js'
@@ -11,6 +10,7 @@ import { WorkingAreaListComponent } from "./WorkingAreaList";
 import { MainToolbar } from "./MainToolbar.js";
 import { Login } from "./Login";
 import { getCookie } from "../utils/cookiesManager.js";
+import '../styles/App.css';
 
 export function App() {
     const [t] = useTranslation();
@@ -26,6 +26,7 @@ export function App() {
                     <MainToolbar pages={pages} />
                     <div className="main-content">
                         <Switch>
+                            <Route path='/' component={Calendar} exact />
                             {pages.map((page) => (
                                 <Route key={page} path={`/${page}`} component={pageClasses[pages.indexOf(page)]} exact />
                             ))}

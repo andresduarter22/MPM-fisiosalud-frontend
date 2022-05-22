@@ -79,9 +79,6 @@ export function Calendar() {
 
     if (!isLoaded) return <div>Loading...</div>;
     
-
-
-
     function CustomEditor({scheduler}) {
         console.log(scheduler)
         return (
@@ -126,6 +123,7 @@ export function Calendar() {
         </div >
     )
 }
+
 function ValidateWithCamera({setIsLoaded, therapyId}) {
     const { t } = useTranslation();
     const webcamRef = useRef(null);
@@ -486,6 +484,7 @@ function CreateTreatment({t, setIsLoaded, handleClose}){
 
             </StyledToggleButtonGroup>
             <Button onClick={handleDeleteBatch(props.index)}>
+                {/* TODO modificar texto */}
                 <p>Delete</p>
             </Button>
         </div>)
