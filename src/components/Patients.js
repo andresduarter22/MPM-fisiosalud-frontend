@@ -12,9 +12,11 @@ import Grid from '@mui/material/Grid';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
-import { FormGroup, TextField, FormControlLabel } from '@mui/material';
-import patientListRequests from '../requests/patientListRequests.js';
+import FormGroup from '@mui/material/FormGroup';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import functionUtils from '../utils/functionUtils.js'
+import requester from '../apiRequester/Requester.js';
 import localizedComponents from '../utils/localizedComponents.js'
 import Webcam from "react-webcam";
 import '../styles/App.css';
@@ -27,6 +29,8 @@ const videoConstraints = {
 
 export function Patients() {
     const [t] = useTranslation();
+    const dataGridLocales = localizedComponents.DatagridLocales();
+    const patientEndpoint = 'patient';
     const [elements, setElements] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -45,6 +49,7 @@ export function Patients() {
     const [referenceDoctor, setReferenceDoctor] = useState('');
     const [additionalInfo, setAdditionalInfo] = useState('');
     const [oldID, setOldID] = useState('');
+    const [updateID, setUpdateID] = useState('');
 
     const [patientIDError, setPatientIDError] = useState(false);
     const [patientNameError, setPatientNameError] = useState(false);
@@ -59,41 +64,12 @@ export function Patients() {
     const [isCaptureEnable, setCaptureEnable] = useState(false);
     const webcamRef = useRef(null);
     const [url, setUrl] = useState(null);
-
-    const handleOpenCreate = () => setOpenCreate(true);
-    const handleOpenUpdate = async (updatePatientID) => {
-        const patientInfo = await getPatient(updatePatientID);
-        setPatientID(patientInfo._id);
-        setPatientName(patientInfo.patient_name);
-        setPatientEmail(patientInfo.patient_email);
-        setPatientNickname(patientInfo.patient_nickname);
-        setPatientBirthday(patientInfo.patient_birthday);
-        setPatientPhoneNumber(patientInfo.patient_phone_number);
-        setPatientAddress(patientInfo.patient_address);
-        setReferenceContactName(patientInfo.reference_contact_name);
-        setReferenceContactNumber(patientInfo.reference_contact_number);
-        setReferenceDoctor(patientInfo.reference_doctor);
-        setAdditionalInfo(patientInfo.additional_info);
-        setOldID(patientInfo.old_id);
-        setOpenUpdate(true);
-    };
-
-    const handleClose = () => {
-        setOpenCreate(false);
-        setOpenUpdate(false);
-        enableTextFields(false);
-        cleanModalFields();
-    };
-
-    const switchHandler = (event) => {
-        enableTextFields(event.target.checked);
-    };
-
-    const enableTextFields = (checked) => {
-        setIsEditing(checked);
-    };
-
-    const dataGridLocales = localizedComponents.DatagridLocales();
+    const capture = useCallback(() => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        if (imageSrc) {
+            setUrl(imageSrc);
+        }
+    }, [webcamRef]);
 
     const columns = [
         {
@@ -133,22 +109,105 @@ export function Patients() {
         },
     ];
 
-    const capture = useCallback(() => {
-        const imageSrc = webcamRef.current.getScreenshot();
-        if (imageSrc) {
-            setUrl(imageSrc);
-        }
-    }, [webcamRef]);
+    async function handleOpenCreate() { setOpenCreate(true) };
+    async function handleOpenUpdate(updatePatientID) {
+        const patientInfo = await getPatient(updatePatientID);
+        setPatientID(patientInfo._id);
+        setPatientName(patientInfo.patient_name);
+        setPatientEmail(patientInfo.patient_email);
+        setPatientNickname(patientInfo.patient_nickname);
+        setPatientBirthday(patientInfo.patient_birthday);
+        setPatientPhoneNumber(patientInfo.patient_phone_number);
+        setPatientAddress(patientInfo.patient_address);
+        setReferenceContactName(patientInfo.reference_contact_name);
+        setReferenceContactNumber(patientInfo.reference_contact_number);
+        setReferenceDoctor(patientInfo.reference_doctor);
+        setAdditionalInfo(patientInfo.additional_info);
+        setOldID(patientInfo.old_id);
+        setUpdateID(updatePatientID);
+        setOpenUpdate(true);
+    };
 
-    const loadPatientsList = async () => {
+    async function handleClose() {
+        setOpenCreate(false);
+        setOpenUpdate(false);
+        enableTextFields(false);
+        cleanModalFields();
+    };
+
+    async function switchHandler(event) {
+        enableTextFields(event.target.checked);
+    };
+
+    async function enableTextFields(checked) {
+        setIsEditing(checked);
+    };
+
+    async function loadPatientsList() {
         try {
-            const patients = await patientListRequests.getPatientsList();
+            const patients = await requester.requestGetList(patientEndpoint);
             setElements(patients);
             setIsLoaded(true);
         } catch (error) {
             setIsLoaded(true)
             console.log(error);
         };
+    };
+
+    async function getPatient(patientID) {
+        try {
+            const patient = await requester.requestGet(patientEndpoint, patientID);
+            return patient;
+        } catch (error) {
+            console.log(error);
+        };
+    };
+
+    async function handleSubmit() {
+        if (validateRequiredFields()) return;
+        setIsLoaded(false);
+        const requestBody = {
+            body: {
+                _id: patientID,
+                patient_name: patientName,
+                patient_email: patientEmail,
+                patient_nickname: patientNickname,
+                patient_birthday: patientBirthday,
+                patient_phone_number: patientPhoneNumber,
+                patient_address: patientAddress,
+                reference_contact_name: referenceContactName,
+                reference_contact_number: referenceContactNumber,
+                reference_doctor: referenceDoctor,
+                additional_info: additionalInfo,
+                old_id: oldID,
+                patient_image: url,
+            },
+            filter: {},
+        };
+        if (openCreate) {
+            if (referenceDoctor === '') delete requestBody.body.reference_doctor;
+            if (additionalInfo === '') delete requestBody.body.additional_info;
+            if (oldID === '') delete requestBody.body.old_id;
+            await requester.requestInsert(patientEndpoint, JSON.stringify(requestBody));
+        } else if (openUpdate) {
+            if (url === null) delete requestBody.body.patient_image;
+            requestBody.filter._id = updateID;
+            console.log(requestBody);
+            await requester.requestUpdate(patientEndpoint, JSON.stringify(requestBody));
+        }
+        handleClose();
+        loadPatientsList();
+    };
+
+    async function handleDelete(patientID) {
+        setIsLoaded(false);
+        const requestBody = {
+            filter: {
+                _id: patientID,
+            }
+        };
+        await requester.requestDelete(patientEndpoint, JSON.stringify(requestBody));
+        loadPatientsList();
     };
 
     function cleanModalFields() {
@@ -164,6 +223,7 @@ export function Patients() {
         setReferenceDoctor('');
         setAdditionalInfo('');
         setOldID('');
+        setUrl(null)
     };
 
     function validateRequiredFields() {
@@ -234,61 +294,6 @@ export function Patients() {
         return error;
     };
 
-    const getPatient = async (patientID) => {
-        try {
-            const patient = await patientListRequests.getPatient(patientID);
-            return patient;
-        } catch (error) {
-            console.log(error);
-        };
-    };
-
-    const handleDelete = async (patientID) => {
-        setIsLoaded(false);
-        const requestBody = {
-            filter: {
-                _id: patientID,
-            }
-        }
-        await patientListRequests.deletePatient(JSON.stringify(requestBody));
-        loadPatientsList();
-    };
-
-    const handleSubmit = async (event) => {
-        if (validateRequiredFields()) return;
-        setIsLoaded(false);
-        const requestBody = {
-            body: {
-                _id: patientID,
-                patient_name: patientName,
-                patient_email: patientEmail,
-                patient_nickname: patientNickname,
-                patient_birthday: patientBirthday,
-                patient_phone_number: patientPhoneNumber,
-                patient_address: patientAddress,
-                reference_contact_name: referenceContactName,
-                reference_contact_number: referenceContactNumber,
-                patient_image: url,
-            },
-            filter: {}
-        };
-        if (referenceDoctor !== '') requestBody.body.reference_doctor = referenceDoctor;
-        if (additionalInfo !== '') requestBody.body.additional_info = additionalInfo;
-        if (oldID !== '') requestBody.body.old_id = oldID;
-        if (openCreate) {
-            await patientListRequests.insertPatient(JSON.stringify(requestBody));
-            setOpenCreate(false);
-        } else if (openUpdate) {
-            requestBody.filter._id = patientID;
-            console.log(requestBody);
-            await patientListRequests.updatePatient(JSON.stringify(requestBody));
-            enableTextFields(false);
-            setOpenUpdate(false);
-        }
-        cleanModalFields();
-        loadPatientsList();
-    };
-
     useEffect(() => {
         loadPatientsList();
     }, []);
@@ -301,7 +306,6 @@ export function Patients() {
                 <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke', marginTop: 15, marginBottom: 15 }}>
                     {t('title_patient_list')}
                 </Button>
-                {/* <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_patient')} </Button> */}
             </div>
             <div style={{ height: 600, width: '100%', background: 'white' }}>
                 <DataGrid
@@ -330,143 +334,147 @@ export function Patients() {
                             value={patientID}
                             type="number"
                             error={patientIDError}
-                            sx={{ width: 220 }}
+                            sx={{ width: '33%' }}
                             required
                             onChange={functionUtils.handleSetInput(setPatientID)} />
                         <Grid container spacing={1}>
                             <Grid container item className='grid-modal'>
                                 <TextField
-                                    id='patient_name_input'
+                                    id='patient_name_input_create'
                                     label={t('label_patient_name')}
                                     value={patientName}
                                     type="text"
-                                    sx={{ width: 550 }}
+                                    sx={{ width: '45%' }}
                                     error={patientNameError}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientName)} />
                                 <TextField
-                                    id='patient_email_input'
+                                    id='patient_email_input_create'
                                     label={t('label_patient_email')}
                                     value={patientEmail}
                                     type="email"
-                                    sx={{ width: 550 }}
+                                    sx={{ width: '45%' }}
                                     error={patientEmailError}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientEmail)} />
                             </Grid>
-                            <Grid container item justifyContent="space-evenly">
+                            <Grid container item justifyContent="space-between">
                                 <TextField
-                                    id='patient_nickname_input'
+                                    id='patient_nickname_input_create'
                                     label={t('label_patient_nickname')}
                                     value={patientNickname}
-                                    sx={{ width: 220 }}
+                                    sx={{ width: '30%' }}
                                     error={patientNicknameError}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientNickname)} />
-                                <TextField id='patient_phone_number_input'
+                                <TextField id='patient_phone_number_input_create'
                                     label={t('label_patient_phone_number')}
                                     value={patientPhoneNumber}
                                     type="number"
                                     error={patientPhoneNumberError}
-                                    sx={{ width: 220 }}
+                                    ssx={{ width: '30%' }}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientPhoneNumber)} />
                                 <TextField
-                                    id="patient_birthday_input"
+                                    id="patient_birthday_input_create"
                                     label={t('label_patient_birthday')}
                                     type="date"
                                     value={patientBirthday}
                                     required
                                     error={patientBirthdayError}
-                                    sx={{ width: 220 }}
+                                    sx={{ width: '30%' }}
                                     onChange={functionUtils.handleSetInput(setPatientBirthday)}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
+                                    InputLabelProps={{ shrink: true, }}
                                 />
                             </Grid>
                             <Grid container item justifyContent="space-evenly">
                                 <TextField
-                                    id='patient_address_input'
+                                    id='patient_address_input_create'
                                     label={t('label_patient_address')}
                                     value={patientAddress}
                                     error={patientAddressError}
+                                    sx={{ width: '100%' }}
                                     multiline
                                     rows={2}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientAddress)} />
                             </Grid>
-                            <Grid container item justifyContent="space-evenly">
+                            <Grid container item justifyContent="space-between">
                                 <TextField
-                                    id='reference_contact_name_input'
+                                    id='reference_contact_name_input_create'
                                     label={t('label_reference_contact_name')}
                                     value={referenceContactName}
-                                    sx={{ width: 220 }}
+                                    sx={{ width: '45%' }}
                                     error={referenceContactNameError}
                                     required
                                     onChange={functionUtils.handleSetInput(setReferenceContactName)} />
                                 <TextField
-                                    id='reference_contact_number_input'
+                                    id='reference_contact_number_input_create'
                                     label={t('label_reference_contact_number')}
                                     value={referenceContactNumber}
-                                    sx={{ width: 220 }}
+                                    sx={{ width: '45%' }}
                                     error={referenceContactNumberError}
                                     required
                                     onChange={functionUtils.handleSetInput(setReferenceContactNumber)} />
                             </Grid>
-                            <Grid container item justifyContent="space-evenly">
+                            <Grid container item justifyContent="space-between">
                                 <TextField
-                                    id='reference_doctor_input'
+                                    id='reference_doctor_input_create'
                                     label={t('label_reference_doctor')}
                                     value={referenceDoctor}
-                                    sx={{ width: 220 }}
+                                    sx={{ width: '45%' }}
                                     onChange={functionUtils.handleSetInput(setReferenceDoctor)} />
                                 <TextField
-                                    id='old_id_input'
+                                    id='old_id_input_create'
                                     label={t('label_old_id')}
-                                    sx={{ width: 220 }}
+                                    sx={{ width: '45%' }}
                                     value={oldID}
                                     onChange={functionUtils.handleSetInput(setOldID)} />
                             </Grid>
                         </Grid>
+                        <Grid container item justifyContent="space-evenly">
+                            <div style={{ width: '45%' }}>
+                                {isCaptureEnable || (
+                                    <Button onClick={() => setCaptureEnable(true)}>{t('button_enable_cam')}</Button>
+                                )}
+                                {isCaptureEnable && (
+                                    <>
+                                        <div>
+                                            <Button onClick={() => setCaptureEnable(false)}>{t('button_disable_cam')}</Button>
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <Webcam
+                                                audio={false}
+                                                width={540}
+                                                height={360}
+                                                ref={webcamRef}
+                                                screenshotFormat="image/jpeg"
+                                                videoConstraints={videoConstraints}
+                                            />
+                                            <Button onClick={capture}>{t('button_take_picture')}</Button>
 
-                        {isCaptureEnable || (
-                            <Button onClick={() => setCaptureEnable(true)}>Enable cam</Button>
-                        )}
-                        {isCaptureEnable && (
-                            <>
-                                <div>
-                                    <Button onClick={() => setCaptureEnable(false)}>Disable cam</Button>
-                                </div>
-                                <div>
-                                    <Webcam
-                                        audio={false}
-                                        width={540}
-                                        height={360}
-                                        ref={webcamRef}
-                                        screenshotFormat="image/jpeg"
-                                        videoConstraints={videoConstraints}
-                                    />
-                                </div>
-                                <Button onClick={capture}>Take picture</Button>
-                            </>
-                        )}
-                        {url && (
-                            <>
-                                <div>
-                                    <Button
-                                        onClick={() => {
-                                            setUrl(null);
-                                        }}
-                                    >
-                                        Delete Image
-                                    </Button>
-                                </div>
-                                <div>
-                                    <img src={url} alt="Screenshot" />
-                                </div>
-                            </>
-                        )}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                            <div style={{ width: '45%' }}>
+                                {url && (
+                                    <>
+                                        <Typography variant="h6" component="h2">
+                                            {t('title_image_taken')}
+                                        </Typography>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <div>
+                                                <img required src={url} alt="Screenshot" />
+                                            </div>
+                                            <Button onClick={() => { setUrl(null); }}>
+                                                {t('button_remove_image')}
+                                            </Button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </Grid>
                         <TextField
                             id='additional_info_input'
                             label={t('label_additional_info')}
@@ -489,21 +497,25 @@ export function Patients() {
                     </Typography>
                     <FormGroup>
                         <FormControlLabel control={<Switch onChange={switchHandler} />} label={t('label_enable_editing')} />
+                        <TextField
+                            fullWidth
+                            id='patient_id_input_update'
+                            label={t('label_patient_id')}
+                            value={patientID}
+                            type="number"
+                            error={patientIDError}
+                            sx={{ width: 220 }}
+                            required
+                            onChange={functionUtils.handleSetInput(setPatientID)}
+                            disabled={!isEditing} />
                         <Grid container spacing={1}>
                             <Grid container item className='grid-modal'>
-                                <TextField
-                                    id='patient_id_input_update'
-                                    label={t('label_patient_id')}
-                                    value={patientID} error={patientIDError}
-                                    required
-                                    onChange={functionUtils.handleSetInput(setPatientID)}
-                                    disabled={!isEditing} />
-                            </Grid>
-                            <Grid container item justifyContent="space-evenly">
                                 <TextField
                                     id='patient_name_input_update'
                                     label={t('label_patient_name')}
                                     value={patientName}
+                                    type="text"
+                                    sx={{ width: '45%' }}
                                     error={patientNameError}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientName)}
@@ -512,53 +524,63 @@ export function Patients() {
                                     id='patient_email_input_update'
                                     label={t('label_patient_email')}
                                     value={patientEmail}
+                                    type="email"
+                                    sx={{ width: '45%' }}
                                     error={patientEmailError}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientEmail)}
                                     disabled={!isEditing} />
                             </Grid>
-                            <Grid container item justifyContent="space-evenly">
+                            <Grid container item justifyContent="space-between">
                                 <TextField
                                     id='patient_nickname_input_update'
                                     label={t('label_patient_nickname')}
-                                    type="text"
+                                    sx={{ width: '33%' }}
                                     value={patientNickname}
                                     error={patientNicknameError}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientNickname)}
                                     disabled={!isEditing} />
                                 <TextField
-                                    id='patient_birthday_input_update'
-                                    label={t('label_patient_birthday')}
-                                    value={patientBirthday}
-                                    error={patientBirthdayError}
-                                    required
-                                    onChange={functionUtils.handleSetInput(setPatientBirthday)}
-                                    disabled={!isEditing} />
-                            </Grid>
-                            <Grid container item justifyContent="space-evenly">
-                                <TextField
                                     id='patient_phone_number_input_update'
                                     label={t('label_patient_phone_number')}
                                     value={patientPhoneNumber}
                                     error={patientPhoneNumberError}
+                                    sx={{ width: '33%' }}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientPhoneNumber)}
                                     disabled={!isEditing} />
+                                <TextField
+                                    id='patient_birthday_input_update'
+                                    label={t('label_patient_birthday')}
+                                    type="date"
+                                    value={patientBirthday}
+                                    required
+                                    error={patientBirthdayError}
+                                    sx={{ width: '33%' }}
+                                    onChange={functionUtils.handleSetInput(setPatientBirthday)}
+                                    InputLabelProps={{ shrink: true, }}
+                                    disabled={!isEditing} />
+                            </Grid>
+                            <Grid container item justifyContent="space-evenly">
                                 <TextField
                                     id='patient_address_input_update'
                                     label={t('label_patient_address')}
                                     value={patientAddress}
                                     error={patientAddressError}
+                                    sx={{ width: '100%' }}
+                                    multiline
+                                    rows={2}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientAddress)}
                                     disabled={!isEditing} />
                             </Grid>
-                            <Grid container item justifyContent="space-evenly">
+                            <Grid container item justifyContent="space-between">
                                 <TextField
                                     id='reference_contact_name_input_update'
                                     label={t('label_reference_contact_name')}
                                     value={referenceContactName}
+                                    sx={{ width: '45%' }}
                                     error={referenceContactNameError}
                                     required
                                     onChange={functionUtils.handleSetInput(setReferenceContactName)}
@@ -567,38 +589,46 @@ export function Patients() {
                                     id='reference_contact_number_input_update'
                                     label={t('label_reference_contact_number')}
                                     value={referenceContactNumber}
+                                    sx={{ width: '45%' }}
                                     error={referenceContactNumberError}
                                     required
                                     onChange={functionUtils.handleSetInput(setReferenceContactNumber)}
                                     disabled={!isEditing} />
                             </Grid>
-                            <Grid container item justifyContent="space-evenly">
+                            <Grid container item justifyContent="space-between">
                                 <TextField
                                     id='reference_doctor_input_update'
                                     label={t('label_reference_doctor')}
                                     value={referenceDoctor}
+                                    sx={{ width: '45%' }}
                                     onChange={functionUtils.handleSetInput(setReferenceDoctor)}
                                     disabled={!isEditing} />
+                                <TextField
+                                    id='old_id_input_update'
+                                    label={t('label_old_id')}
+                                    value={oldID}
+                                    sx={{ width: '45%' }}
+                                    onChange={functionUtils.handleSetInput(setOldID)}
+                                    disabled={!isEditing} />
+                            </Grid>
+                            <Grid container item justifyContent="space-evenly">
                                 <TextField
                                     id='additional_info_input_update'
                                     label={t('label_additional_info')}
                                     value={additionalInfo}
+                                    sx={{ width: '100%' }}
+                                    multiline
+                                    rows={10}
                                     onChange={functionUtils.handleSetInput(setAdditionalInfo)}
                                     disabled={!isEditing} />
                             </Grid>
                         </Grid>
-                        <TextField
-                            id='old_id_input_update'
-                            label={t('label_old_id')}
-                            value={oldID}
-                            onChange={functionUtils.handleSetInput(setOldID)}
-                            disabled={!isEditing} />
                         <Button onClick={handleSubmit}>{t('button_update')}</Button>
                     </FormGroup>
                 </Box>
             </Modal>
-            <Fab onClick={handleOpenCreate} variant="text" style={{ position: 'absolute', bottom: 10, right:10 }} size="medium" color="secondary">
-                    <AddIcon />
+            <Fab onClick={handleOpenCreate} variant="text" style={{ position: 'absolute', bottom: 10, right: 10 }} size="medium" color="secondary">
+                <AddIcon />
             </Fab>
         </div>
     );

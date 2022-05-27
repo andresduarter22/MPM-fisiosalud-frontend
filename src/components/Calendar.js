@@ -14,8 +14,8 @@ import InputLabel from '@mui/material/InputLabel';
 import { FormGroup, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import TherapyRequests from '../requests/therapyRequests.js';
 import TreatmentsRequests from '../requests/treatmentsRequests.js';
-import PatientListRequests from '../requests/patientListRequests.js';
 import WorkingAreaRequests from '../requests/workingAreaRequests.js';
+import requester from '../apiRequester/Requester.js';
 import calendarProps from '../utils/calendarProps.js';
 import functionUtils from '../utils/functionUtils.js';
 import Webcam from "react-webcam";
@@ -125,7 +125,7 @@ export function Calendar() {
 }
 
 function ValidateWithCamera({setIsLoaded, therapyId}) {
-    const { t } = useTranslation();
+    const [t] = useTranslation();
     const webcamRef = useRef(null);
     const [url, setUrl] = useState(null);
     const [imageValidated, setImageValidated] = useState("Not validated");
@@ -136,7 +136,6 @@ function ValidateWithCamera({setIsLoaded, therapyId}) {
         }
     }, [webcamRef]);
     const handleValidateFace = async (therapyId) => {
-        setIsLoaded(false);
         const therapyBody = {
             body: {
                 date: functionUtils.getToday(),
@@ -154,7 +153,6 @@ function ValidateWithCamera({setIsLoaded, therapyId}) {
         } else {
             setImageValidated(response.message);
         }
-        setIsLoaded(true);
     };
         
     const videoConstraints = {
@@ -270,6 +268,7 @@ function PatientValidation({faceValidation, handleOpenValidateFace}) {
     }
 }
 function CreateTreatment({t, setIsLoaded, handleClose}){
+    const patientEndpoint = 'patient';
     const [treatmentTitle, setTreatmentTitle] = useState('');
     const [treatmentBasicInfo, setTreatmentBasicInfo] = useState('');
     const [patientInfo, setPatientInfo] = useState([]);
@@ -293,7 +292,7 @@ function CreateTreatment({t, setIsLoaded, handleClose}){
 
     const loadPatientsList = async () => {
         try {
-            const patients = await PatientListRequests.getPatientsList();
+            const patients = await requester.requestGetList(patientEndpoint);
             const patientsListResponse = [];
             patients.forEach(patient => {
                 patientsListResponse.push({

@@ -15,7 +15,7 @@ import FormGroup from '@mui/material/FormGroup';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import requester from '../apiRequester/Requester.js';
-import functionUtils from '../utils/functionUtils.js'
+import functionUtils from '../utils/functionUtils.js';
 import localizedComponents from '../utils/localizedComponents.js'
 import '../styles/App.css';
 
