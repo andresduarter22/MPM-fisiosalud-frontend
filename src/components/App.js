@@ -8,14 +8,15 @@ import { Settings } from './Settings.js'
 import { Staff } from './Staff.js'
 import { WorkingArea } from "./WorkingAreaList";
 import { MainToolbar } from "./MainToolbar.js";
+import { TreatmentsList } from "./Treatments.js";
 import { Login } from "./Login";
 import { getCookie } from "../utils/cookiesManager.js";
 import '../styles/App.css';
 
 export function App() {
     const [t] = useTranslation();
-    const pages = [t("title_calendar"), t("title_patitent"), t("title_working_areas_list"), t("title_contact_list"), t("title_shop_Article"), t("title_staff"), t("title_settings")];
-    const pageClasses = [Calendar, Patients, WorkingArea, ContactList, StoreArticlesList, Staff, Settings]
+    const pages = [t("title_calendar"), t("title_patitent"), t("title_working_areas_list"), t("title_contact_list"), t("title_treatments_list"), t("title_shop_Article"), t("title_staff"), t("title_settings")];
+    const pageClasses = [Calendar, Patients, WorkingArea, ContactList, TreatmentsList, StoreArticlesList, Staff, Settings]
     if (getCookie("access_token") === undefined) {
         return <Login />
     }

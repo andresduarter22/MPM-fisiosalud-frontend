@@ -31,7 +31,6 @@ const hourPRAM = (hour) => {
 };
 
 const calculateEndHour = (startHour, durationMin) => {
-    console.log("start hour", startHour);
     let end = new Date(startHour);
     end.setMinutes(end.getMinutes() + durationMin);
     return `${end.toISOString()}`;
@@ -39,6 +38,7 @@ const calculateEndHour = (startHour, durationMin) => {
 
 const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAreaID, therapyDuration, therapyTime="00:00:00" ) => {
     const therapyList = [{
+        title: "THERAPY 1",
         date: startDate,
         area_id: workingAreaID,
         time: therapyTime,
@@ -52,8 +52,9 @@ const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAr
         if (currentDate.getDay().toString() in requestedDays) {
             for (const time of requestedDays[currentDate.getDay().toString()]) {
                 therapyList.push({
+                    title: `THERAPY ${therapyList.length + 1}`,
                     date: currentDate.toISOString().substring(0, 10),
-                    area_id: workingAreaID,
+                    area_id: workingAreaID, 
                     time: time,
                     therapy_status: "open",
                     duration: therapyDuration

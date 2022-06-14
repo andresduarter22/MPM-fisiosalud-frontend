@@ -177,7 +177,8 @@ export function Staff() {
         }
         return error;
     };
-
+    // TODO : create fucntion to change password
+    // TODO : update staff password modal and function to update password
     const handleDelete = async (id) => {
         setIsLoaded(false);
         const requestBody = {

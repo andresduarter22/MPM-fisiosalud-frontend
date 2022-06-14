@@ -24,10 +24,8 @@ export function Login() {
         if (response.status === 200) {
             setIsLoggedIn(true);
             const cookies = await response.json();
-            console.log("cookies: ", cookies);
             if (cookies) {
                 for (const [key, value] of Object.entries(cookies)) {
-                    console.log(`${key}: ${value}`);
                     setCookie(key, value);
                   }
                 window.location.href = '/';

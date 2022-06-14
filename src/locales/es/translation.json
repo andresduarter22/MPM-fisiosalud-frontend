@@ -99,6 +99,7 @@
     "label_shop_item_stock": "Stock del artículo",
     "label_shop_item_price": "Precio del artículo",
     "label_shop_item_currency": "Moneda del Artículo",
+    "label_therapy_amount": "Cantidad de terapias",
 
     "switch_enable_edit": "Habilitar edición",
 
@@ -111,6 +112,7 @@
     "button_delete": "Eliminar",
     "button_edit": "Editar",
     "button_add_new_treatment": "Añadir nuevo tratamiento",
+    "button_cancel": "Cancelar",
 
     "input_basic_info": "Información básica"
 }

@@ -126,9 +126,7 @@ export function StoreArticlesList() {
     };
 
     async function handleSubmit() {
-        console.log('handleSubmit');
         if (validateRequiredFields()) return;
-        console.log('handleSubmit 2');
         setIsLoaded(false);
         const requestBody = {
             body: {

@@ -192,7 +192,6 @@ export function Patients() {
         } else if (openUpdate) {
             if (url === null) delete requestBody.body.patient_image;
             requestBody.filter._id = updateID;
-            console.log(requestBody);
             await requester.requestUpdate(patientEndpoint, JSON.stringify(requestBody));
         }
         handleClose();
