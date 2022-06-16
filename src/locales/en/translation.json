@@ -44,6 +44,7 @@
     "title_article_price": "Price",
     "title_article_currency": "Currency",
     "title_update_shop_item": "Update Shop Item",
+    "title_login": "Login",
 
     "columnMenu_Unsort": "Unsort",
     "columnMenu_SortAsc": "Sort ASC",
@@ -100,6 +101,15 @@
     "label_shop_item_price": "Shop Article Price",
     "label_shop_item_currency": "Shop Article Currency",
     "label_therapy_amount": "Therapy Amount",
+    "label_start": "Start date",
+    "label_end": "End date",
+    "label_toggle_validation_type": "Toggle Validation Type",
+    "label_validation_by_id": "Validation by ID (CI or Passport)",
+    "label_validate_by_face": "Validate by Face recognition",
+    "label_validate": "Validate",
+    "label_open_camera": "Open Camera",
+    "label_login_password": "Password",
+    "label_login_username": "Username",
 
     "switch_enable_edit": "Enable Edit",
 
@@ -113,6 +123,7 @@
     "button_edit": "Edit",
     "button_add_new_treatment": "Add new Treatment",
     "button_cancel": "Cancel",
+    "button_login": "Login",
 
     "input_basic_info": "Basic Information"
 }

@@ -222,10 +222,10 @@ function CustomViewer({ event, loadTherapies }) {
             <Typography variant="h6" component="h2">
                 {event.title}
             </Typography>
-            <Typography variant="body1" component="p">
+            <Typography variant="body1" component="p" sx={{ width: '95%' }}>
                 {t('label_start')}: {event.start.toString()}
             </Typography>
-            <Typography variant="body1" component="p">
+            <Typography variant="body1" component="p" sx={{ width: '95%' }}>
                 {t('label_end')}: {event.end.toString()}
             </Typography>
             <Button onClick={() => setFaceValidation(!faceValidation)}>
@@ -263,8 +263,14 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies}) {
             },
             filter: { _id: therapy_id }
         };
+        // TODO: use response to show message on toast
         const response = await requester.requestUpdate('therapy', JSON.stringify(therapyBody));
         handleClose();
+        if (response.result) {
+            return true;
+        } else {
+            return false;
+        }
     };
 
     if (faceValidation) {
@@ -288,9 +294,9 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies}) {
     } else {
         return (
             <>
-                <Typography variant="h2" component="p">
+                <Typography variant="h4" component="p" >
                     {/* TODO modificar texto */}
-                    {t('title_validation_by_id')}
+                    {t('label_validation_by_id')}
                 </Typography>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
@@ -303,16 +309,18 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies}) {
                             fullWidth
                             sx={{ width: '90%' }}
                         />
+                            </Grid>
+                            <Grid item xs={12}>
                         <Button
                             variant="outlined"
                             color="primary"
                             fullWidth
-                            sx={{ width: '10%' }}
+                            sx={{ width: '60%' }}
                             onClick={handleValidateID}
                         >
-                            {t('label_validate_patient')}
+                            {t('label_validate')}
                         </Button>
-                    </Grid>
+                        </Grid>
                 </Grid>
             </>
         );
@@ -432,7 +440,8 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
             },
             filter: {}
         };
-        const areaName = workingAreasList.find(o => o.area_id === workingAreaID);
+        // TODO: create treatment names with area name and patient name on it
+        // const areaName = workingAreasList.find(o => o.area_id === workingAreaID);
         const treatmentID = await requester.requestInsert(treatmentEnpoint, JSON.stringify(requestBodyTreatment));
         const therapiesList = []
         functionUtils.generateTherapyList(therapyDate, Number(therapyAmount), therapyBatches, workingAreaID, Number(therapyDuration), therapyTime).map(async (body) => {

@@ -6,6 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import requester from "../apiRequester/Requester.js"
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { setCookie } from "../utils/cookiesManager.js";
 
 export function Login() {
@@ -39,8 +40,12 @@ export function Login() {
     return (
         // TODO: Fix UI of login page
         <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ height: 100 }}>
-                <h4>{t('login.title')}</h4>
+            <div style={{ marginTop: "2%" }}>
+            <Typography 
+            variant="h4" 
+            component={Typography}
+            sx={{textColor: 'primary', fontWeight: 'bold'}}          
+            >{t('title_login')}</Typography>
             </div>
             <div className="App-content">
                 <div className="App-content-login">
@@ -50,7 +55,7 @@ export function Login() {
                                 htmlFor="username"
                                 id="username"
                                 type="text"
-                                label={t('login.username')}
+                                label={t('label_login_username')}
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 placeholder={t('login.usernamePlaceholder')}
@@ -64,7 +69,7 @@ export function Login() {
                                 htmlFor="password"
                                 id="password"
                                 type="password"
-                                label={t('login.password')}
+                                label={t('label_login_password')}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder={t('login.passwordPlaceholder')}
@@ -79,7 +84,7 @@ export function Login() {
                                 onClick={handleLogin}
                                 disabled={isLoading}
                             >
-                                {t('login.login')}
+                                {t('button_login')}
                             </Button>
                         </div>
                     </div>
