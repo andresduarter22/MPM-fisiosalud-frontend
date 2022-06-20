@@ -23,7 +23,7 @@
     "title_create_new_contact": "Create a Contact",
     "title_create_new_shop_item": "Create a Shop item",
     "title_patient_id": "ID",
-    "title_patient_name": "Name",
+    "title_patient_name": "Patient Name",
     "title_patient_phone_number": "Phone Number",
     "title_patient_email": "Email",
     "title_patient_nickname": "Nickname",
@@ -45,6 +45,9 @@
     "title_article_currency": "Currency",
     "title_update_shop_item": "Update Shop Item",
     "title_login": "Login",
+    "title_treatments_list": "Treatments",
+    "title_treatment_name": "Treatment Name",
+    "title_therapies_count": "Therapies Count",
 
     "columnMenu_Unsort": "Unsort",
     "columnMenu_SortAsc": "Sort ASC",

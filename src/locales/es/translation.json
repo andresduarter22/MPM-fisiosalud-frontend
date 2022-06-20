@@ -45,6 +45,9 @@
     "title_article_currency": "Moneda",
     "title_update_shop_item": "Actualizar elemento de la tienda",
     "title_login": "Iniciar sesión",
+    "title_treatments_list": "Tratamientos",
+    "title_treatment_name": "Nombre del tratamiento",
+    "title_therapies_count": "Número de terapias",
 
     "columnMenu_Unsort": "Sin clasificar",
     "columnMenu_SortAsc": "Ordenar en orden ascendente",

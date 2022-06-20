@@ -12,15 +12,16 @@ import { setCookie } from "../utils/cookiesManager.js";
 export function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [usernameError, setUsernameError] = useState(false);
+    const [passwordError, setPasswordError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const { t } = useTranslation();
 
     const handleLogin = async () => {
+        if (validateRequiredFields()) return;
         setIsLoading(true);
-        setError('');
         const response = await requester.requestLogin(username, password);
         if (response.status === 200) {
             setIsLoggedIn(true);
@@ -35,7 +36,26 @@ export function Login() {
             setIsLoggedIn(false);
         }
         setIsLoading(false);
-    }
+    };
+
+    function validateRequiredFields() {
+        let error = false;
+        if (username === '') {
+            setUsernameError(t('usernameRequired'));
+            error = true;
+        } else {
+            setUsernameError(false);
+            error = false;
+        }
+        if (password === '') {
+            setPasswordError(t('passwordRequired'));
+            error = true;
+        } else {
+            setPasswordError(false);
+            error = false;
+        }
+        return error;
+    }; 
 
     return (
         // TODO: Fix UI of login page
@@ -55,6 +75,7 @@ export function Login() {
                                 htmlFor="username"
                                 id="username"
                                 type="text"
+                                error={usernameError}
                                 label={t('label_login_username')}
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
@@ -69,6 +90,7 @@ export function Login() {
                                 htmlFor="password"
                                 id="password"
                                 type="password"
+                                error={passwordError}
                                 label={t('label_login_password')}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -88,9 +110,9 @@ export function Login() {
                             </Button>
                         </div>
                     </div>
-                    <div className="App-content-login-error">
+                    {/* <div className="App-content-login-error">
                         {error && <div className="App-content-login-error-message">{error}</div>}
-                    </div>
+                    </div> */}
                 </div>
                 <div className="App-content-login-status">
                     {isLoggedIn && <div className="App-content-login-status-message">{t('login.loggedIn')}</div>}
@@ -98,4 +120,4 @@ export function Login() {
             </div>
         </div>
     );
-}
+};
