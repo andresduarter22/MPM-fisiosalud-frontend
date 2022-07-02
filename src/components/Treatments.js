@@ -2,23 +2,23 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from "react-i18next";
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-import AddIcon from '@mui/icons-material/Add';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Fab from '@mui/material/Fab';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Modal from '@mui/material/Modal';
 import Switch from '@mui/material/Switch';
 import FormGroup from '@mui/material/FormGroup';
 import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
+// import FormControl from '@mui/material/FormControl';
+// import Select from '@mui/material/Select';
+// import InputLabel from '@mui/material/InputLabel';
+// import MenuItem from '@mui/material/MenuItem';
 import requester from '../apiRequester/Requester.js';
 import functionUtils from '../utils/functionUtils.js'
 import localizedComponents from '../utils/localizedComponents.js'
@@ -30,20 +30,22 @@ export function TreatmentsList() {
     const treatmentEndpoint = 'treatment';
     const [elements, setElements] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [openCreate, setOpenCreate] = useState(false);
+    const [openThreapiesList, setOpenThreapiesList] = useState(false);
     const [openUpdate, setOpenUpdate] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
+    const [updateTreatmentID, setUpdateTreatmentID] = useState('');
     const [treatmentTitle, setTreatmentTitle] = useState('');
     const [patientID, setPatientID] = useState('');
+    const [patientName, setPatientName] = useState('');
     const [treatmentBasicInfo, setTreatmentBasicInfo] = useState('');
     const [treatmentAdditInfo, setTreatmentAdditInfo] = useState('');
     const [therapiesList, setTherapiesList] = useState([]);
 
     const [treatmentTitleError, setTreatmentTitleError] = useState(false);
     const [patientIDError, setPatientIDError] = useState(false);
+    const [patientNameError, setPatientnameError] = useState(false);
     const [treatmentBasicInfoError, setTreatmentBasicInfoError] = useState(false);
-    const [therapiesListError, setTherapiesListError] = useState(false);
 
     const columns = [
         {
@@ -52,8 +54,8 @@ export function TreatmentsList() {
             )
         },
         {
-            field: 'patitent_info', headerName: t('title_therapies'), width: 200, renderCell: (params) => (
-                <Link underline="none" rel='noopener' onClick={() => handleOpenUpdate(params.id)}>{params.value}</Link>
+            field: 'patitent_info', headerName: t('title_patient_name'), width: 200, renderCell: (params) => (
+                <Link underline="none" rel='noopener' onClick={() => handleOpenUpdate(params.id)}>{params.value[1]}</Link>
             )
         },
         {
@@ -68,6 +70,12 @@ export function TreatmentsList() {
                     showInMenu
                 />,
                 <GridActionsCellItem
+                    icon={<FormatListBulletedIcon />}
+                    label={t('button_open_therapies_list')}
+                    onClick={() =>  handleOpenTherapiesList(params.id) }
+                    showInMenu
+                />,
+                <GridActionsCellItem
                     icon={<DeleteIcon />}
                     label={t('button_delete')}
                     onClick={() => { handleDelete(params.id) }}
@@ -77,21 +85,52 @@ export function TreatmentsList() {
         }
     ];
 
-    async function handleOpenCreate() { setOpenCreate(true) };
+    const therapiesColumns = [
+        {
+            field: 'title', headerName: t('title_therapy_name'), width: 200
+        },
+        {
+            field: 'actions',
+            type: 'actions',
+            width: 80,
+            getActions: (params) => [
+                <GridActionsCellItem
+                    icon={<DeleteIcon />}
+                    label={t('button_delete')}
+                    onClick={() => { handleDelete(params.id) }}
+                    showInMenu
+                />,
+            ],
+        }
+    ];
 
-    async function handleOpenUpdate(shopItemID) {
-        const treatmentInfo = await getTreatment(shopItemID);
-        setTreatmentTitle(treatmentInfo.title);
-        setPatientID(treatmentInfo.patitent_id);
-        setTreatmentBasicInfo(treatmentInfo.basic_info);
+    async function handleOpenTherapiesList(treatmentID) {
+        console.log("Therapies", treatmentID);
+        const treatmentInfo = await getTreatment(treatmentID);
+        console.log(openThreapiesList);
+        console.log("Info: ", treatmentInfo.therapies);
         setTherapiesList(treatmentInfo.therapies);
+        // TODO: get therapies list for treatment
+        // setTherapiesList([{_id: 1, title: "test"}]);
+        setOpenThreapiesList(true);
+    };
+
+    async function handleOpenUpdate(treatmentID) {
+        const treatmentInfo = await getTreatment(treatmentID);
+        console.log("patient: ", treatmentInfo.patitent_info);
+        setUpdateTreatmentID(treatmentID);
+        setTreatmentTitle(treatmentInfo.title);
+        setPatientID(treatmentInfo.patitent_info[0]);
+        setPatientName(treatmentInfo.patitent_info[1]);
+        setTreatmentBasicInfo(treatmentInfo.basic_info);
+        // setTherapiesList(treatmentInfo.therapies);
         setTreatmentAdditInfo(treatmentInfo.additional_info);
         setOpenUpdate(true);
     };
 
     async function handleClose() {
         setOpenUpdate(false);
-        setOpenCreate(false);
+        setOpenThreapiesList(false);
         enableTextFields(false);
         cleanModalFields();
     };
@@ -112,7 +151,12 @@ export function TreatmentsList() {
     async function loadTreatmentsList() {
         try {
             const treatmentsList = await requester.requestGetList(treatmentEndpoint);
-            console.log(treatmentsList);
+            console.log("treatments", treatmentsList);
+            Promise.all(treatmentsList.map(async (treatment) => {
+                const therapiesCount = treatment.therapies.length;
+                treatment.therapiesCount = therapiesCount;
+            }));
+            // console.log("trerapies count:", treatmentsList[0].therapiesCount);
             setElements(treatmentsList)
             setIsLoaded(true)
         } catch (error) {
@@ -126,23 +170,17 @@ export function TreatmentsList() {
         setIsLoaded(false);
         const requestBody = {
             body: {
-                // article_name: shopItemName,
-                // basic_info: shopItemBasicInfo,
-                // number_of_items: Number(numberOfItems),
-                // price: Number(shopItemPrice),
-                // currency: shopItemCurrency
+                title: treatmentTitle,
+                patitent_id: [patientID, patientName],
+                basic_info: treatmentBasicInfo
             },
-            filter: {}
+            filter: {
+                _id: updateTreatmentID
+            }
         };
-
-        if (openCreate) {
-            requester.requestInsert(treatmentEndpoint, JSON.stringify(requestBody));
-            setOpenCreate(false);
-        } else if (openUpdate) {
-            // requestBody.filter._id = updateShopItemID;
-            requester.requestUpdate(treatmentEndpoint, JSON.stringify(requestBody));
-            setOpenUpdate(false);
-        }
+        if (treatmentAdditInfo !== '') requestBody.body.additional_info = treatmentAdditInfo;
+        requester.requestUpdate(treatmentEndpoint, JSON.stringify(requestBody));
+        setOpenUpdate(false);
         handleClose();
         loadTreatmentsList();
     };
@@ -163,7 +201,7 @@ export function TreatmentsList() {
         setPatientID('');
         setTreatmentBasicInfo('');
         setTreatmentAdditInfo('');
-        setTherapiesList([]);
+        // setTherapiesList([]);
     };
 
     async function enableTextFields(checked) {
@@ -193,11 +231,11 @@ export function TreatmentsList() {
             setTreatmentBasicInfoError(false);
             error = false;
         }
-        if (therapiesList === []) {
-            setTherapiesListError(true);
+        if (patientName === '') {
+            setPatientnameError(true);
             return true;
         } else {
-            setTherapiesListError(false);
+            setPatientnameError(false);
             error = false;
         }
         return error;
@@ -229,16 +267,88 @@ export function TreatmentsList() {
                 />
             </div>
 
+            <Modal
+            // TODO: check locales
+                open={openUpdate}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-content">
+                <Box className='modal-box'>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        {t('title_update_treatment')}
+                    </Typography>
+                    <FormGroup>
+                        <FormControlLabel control={<Switch onChange={switchHandler} />} label={t('label_enable_editing')} />
+                        <TextField
+                            id="tretment_title_input"
+                            label={t('label_tretment_title')}
+                            value={treatmentTitle}
+                            error={treatmentTitleError}
+                            required
+                            onChange={functionUtils.handleSetInput(setTreatmentTitle)}
+                            disabled={!isEditing} />
+                        <TextField
+                            id="basic_info_input"
+                            label={t('label_basic_info')}
+                            value={treatmentBasicInfo}
+                            error={treatmentBasicInfoError}
+                            required
+                            multiline
+                            rows={5}
+                            onChange={functionUtils.handleSetInput(setTreatmentBasicInfo)}
+                            disabled={!isEditing} />
+                        <Grid container item justifyContent="space-between">
+                            <TextField
+                                id="patient_name_input"
+                                label={t('label_patient_name')}
+                                value={patientName}
+                                error={patientNameError}
+                                required
+                                sx={{ width: '45%' }}
+                                onChange={functionUtils.handleSetInput(setPatientName)}
+                                disabled={!isEditing} />
 
-
-            <Fab
-                onClick={handleOpenCreate}
-                variant="text"
-                style={{ position: 'absolute', bottom: 10, right: 10 }}
-                size="medium"
-                color="secondary">
-                <AddIcon />
-            </Fab>
+                            <TextField
+                                id="patient_id_input"
+                                label={t('label_patient_id')}
+                                value={patientID}
+                                error={patientIDError}
+                                required
+                                sx={{ width: '45%' }}
+                                onChange={functionUtils.handleSetInput(setPatientID)}
+                                disabled={!isEditing} />
+                        </Grid>
+                        <TextField
+                            id="addit_info_input"
+                            label={t('label_addit_info')}
+                            value={treatmentAdditInfo}
+                            multiline
+                            rows={5}
+                            onChange={functionUtils.handleSetInput(setTreatmentAdditInfo)}
+                            disabled={!isEditing} />
+                    </FormGroup>
+                    <Button disabled={!isEditing} onClick={handleSubmit}>{t('button_update')}</Button>
+                </Box>
+            </Modal>
+            <Modal
+                open={openThreapiesList}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-content">
+                <Box className='modal-box-big'>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        {t('title_therapies_list')}
+                    </Typography>
+                    <DataGrid
+                        rows={therapiesList}
+                        columns={therapiesColumns}
+                        pageSize={5}
+                        rowsPerPageOptions={[5]}
+                        getRowId={(row) => row._id}
+                        localeText={dataGridLocales}
+                    />
+                </Box>
+            </Modal>
         </div>
     );
 };

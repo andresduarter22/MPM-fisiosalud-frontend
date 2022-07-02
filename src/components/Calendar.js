@@ -66,6 +66,39 @@ export function Calendar() {
         setIsLoaded(true);
     };
 
+    const cancelTherapy = async (event) => {
+        console.log(event);
+        const therapyBody = {
+            body: {
+                action: "cancel",
+            },
+            filter: { _id: event }
+        }
+        const response = await requester.requestUpdate(therapyEnpoint, JSON.stringify(therapyBody));
+        console.log(response);
+        await loadTherapies();
+    };
+
+    const moveTherapy = async (event, therapy) => {
+        const actualTherapy = await requester.requestGet(therapyEnpoint, therapy.event_id);
+        const newDate = functionUtils.getDate(event);
+        const newHour = functionUtils.getHour(event);
+        const updateTherapyBody = {
+            body: {
+                date: functionUtils.getDate(event),
+                action: "update"
+            },
+            filter: {
+                _id: therapy.event_id
+            }
+        };
+        if (newDate !== actualTherapy.date) updateTherapyBody.body.date = newDate;
+        if (newHour !== actualTherapy.time) updateTherapyBody.body.time = newHour;
+        console.log(updateTherapyBody)
+        await requester.requestUpdate(therapyEnpoint, JSON.stringify(updateTherapyBody));
+        await loadTherapies();
+    };
+
     function cleanModalFields() { };
 
     useEffect(() => {
@@ -92,12 +125,19 @@ export function Calendar() {
             </div>
             <div style={{ height: '100%', width: '100%', background: 'white' }}>
                 <Scheduler
-                    customEditor={(scheduler) => <CustomEditor t={t} scheduler={scheduler} setIsLoaded={setIsLoaded} handleClose={handleClose} />}
+                    customEditor={(scheduler) => <CustomEditor
+                        t={t}
+                        scheduler={scheduler}
+                        setIsLoaded={setIsLoaded}
+                        handleClose={handleClose}
+                    />}
                     viewerExtraComponent={(fields, event) => <CustomViewer
                         fields={fields}
                         event={event}
                         loadTherapies={loadTherapies}
                     />}
+                    onEventDrop={(event, therapy) => { moveTherapy(event, therapy) }}
+                    onDelete={(event) => { cancelTherapy(event) }}
                     events={therapiesList}
                     month={calendarProps.month}
                     week={calendarProps.week}
@@ -240,7 +280,7 @@ function CustomViewer({ event, loadTherapies }) {
     );
 };
 
-function PatientValidation({ faceValidation, therapy_id, loadTherapies}) {
+function PatientValidation({ faceValidation, therapy_id, loadTherapies }) {
     const [t] = useTranslation();
     const [patientID, setPatientID] = useState('');
     const [openValidateFace, setOpenValidateFace] = useState(false);
@@ -276,20 +316,20 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies}) {
     if (faceValidation) {
         return (
             // TODO: open this modal when the user clicks on the button
-        <>
-            <Typography variant="h2" component="p">
-                <Button onClick={async() => { await handleOpenValidateFace() }}>
-                    {t('label_open_camera')}
-                </Button>
-            </Typography>
-            <Modal
-                open={openValidateFace}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-content" >
-                <ValidateWithCamera therapyId={therapy_id} />
-            </Modal>
-        </>
+            <>
+                <Typography variant="h2" component="p">
+                    <Button onClick={async () => { await handleOpenValidateFace() }}>
+                        {t('label_open_camera')}
+                    </Button>
+                </Typography>
+                <Modal
+                    open={openValidateFace}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-content" >
+                    <ValidateWithCamera therapyId={therapy_id} />
+                </Modal>
+            </>
         );
     } else {
         return (
@@ -309,8 +349,8 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies}) {
                             fullWidth
                             sx={{ width: '90%' }}
                         />
-                            </Grid>
-                            <Grid item xs={12}>
+                    </Grid>
+                    <Grid item xs={12}>
                         <Button
                             variant="outlined"
                             color="primary"
@@ -320,7 +360,7 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies}) {
                         >
                             {t('label_validate')}
                         </Button>
-                        </Grid>
+                    </Grid>
                 </Grid>
             </>
         );
@@ -352,6 +392,7 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
     const [therapyDateError, setTherapyDateError] = useState(false);
     const [therapyAmountError, setTherapyAmountError] = useState(false);
     const [therapyDurationError, setTherapyDurationError] = useState(false);
+    const [batchError, setBatchError] = useState(false);
 
     const daysOfTheWeek = [
         { label: 'label_monday', value: '0' },
@@ -415,10 +456,10 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
             const areasListResponse = [];
             areas.forEach(area => {
                 if (area.area_available) {
-                areasListResponse.push({
-                    area_id: area._id,
-                    area_name: area.area_name,
-                });
+                    areasListResponse.push({
+                        area_id: area._id,
+                        area_name: area.area_name,
+                    });
                 }
             })
             setWorkingAreasList(areasListResponse);
@@ -427,8 +468,26 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
         };
     };
 
+    const validateBatches = () => {
+        let isValid = true;
+        therapyBatches.forEach(batch => {
+            console.log(batch);
+            if (batch.days.length === 0) {
+                setBatchError(true);
+                isValid = false;
+            }
+            if (batch.time === '') {
+                setBatchError(true);
+                isValid = false;
+            }
+        }
+        );
+        return isValid;
+    };
+
     const handleSubmit = async () => {
         if (validateRequiredFields()) return;
+        if (!validateBatches()) return;
         setIsLoaded(false);
         const requestBodyTreatment = {
             body: {
@@ -440,17 +499,23 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
             },
             filter: {}
         };
-        // TODO: create treatment names with area name and patient name on it
-        // const areaName = workingAreasList.find(o => o.area_id === workingAreaID);
         const treatmentID = await requester.requestInsert(treatmentEnpoint, JSON.stringify(requestBodyTreatment));
-        const therapiesList = []
-        functionUtils.generateTherapyList(therapyDate, Number(therapyAmount), therapyBatches, workingAreaID, Number(therapyDuration), therapyTime).map(async (body) => {
-            const requestBody = {
-                body: body,
-                filter: {}
-            }
-            therapiesList.push(await requester.requestInsert(therapyEnpoint, JSON.stringify(requestBody)));
-        });
+        const therapiesList = await Promise.all(
+            functionUtils.generateTherapyList(
+                therapyDate,
+                Number(therapyAmount),
+                therapyBatches,
+                workingAreaID,
+                Number(therapyDuration),
+                therapyTime
+            ).map(async (body) => {
+                const requestBody = {
+                    body: body,
+                    filter: {}
+                };
+                const threapyResponse = await requester.requestInsert(therapyEnpoint, JSON.stringify(requestBody));
+                return threapyResponse[0];
+            }));
         const requestBodyTherapyList = {
             body: {
                 therapies: therapiesList
@@ -528,6 +593,7 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
                 type="time"
                 value={props.item.time}
                 required
+                error={batchError}
                 // error={therapyTimeError}
                 sx={{ width: 220 }}
                 onChange={handleBatchTime(props.index)}

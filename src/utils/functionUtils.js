@@ -4,6 +4,21 @@ function handleSetInput(handlerFunction) {
     };
 };
 
+const getDate = (date) => {
+    const currentDate = new Date(date);
+    const dd = String(currentDate.getDate()).padStart(2, '0');
+    const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const yyyy = currentDate.getFullYear();
+    return `${yyyy}-${mm}-${dd}`;
+};
+
+const getHour = (date) => {
+    const hour = new Date(date);
+    const hh = String(hour.getHours()).padStart(2, '0');
+    const mm = String(hour.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}:00`;
+};
+
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 };
@@ -105,6 +120,8 @@ const exports = {
     getCurrentHour,
     calculateEndHour,
     generateTherapyList,
+    getDate,
+    getHour,
 };
 
 export default exports;
