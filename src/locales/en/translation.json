@@ -48,6 +48,8 @@
     "title_treatments_list": "Treatments",
     "title_treatment_name": "Treatment Name",
     "title_therapies_count": "Therapies Count",
+    "title_therapies_list": "Therapy List",
+    "title_therapy_name": "Therapy Name",
 
     "columnMenu_Unsort": "Unsort",
     "columnMenu_SortAsc": "Sort ASC",
@@ -127,6 +129,7 @@
     "button_add_new_treatment": "Add new Treatment",
     "button_cancel": "Cancel",
     "button_login": "Login",
+    "button_open_therapies_list": "Open Therapies List",
 
     "input_basic_info": "Basic Information"
 }

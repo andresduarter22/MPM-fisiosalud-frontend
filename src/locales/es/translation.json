@@ -48,6 +48,8 @@
     "title_treatments_list": "Tratamientos",
     "title_treatment_name": "Nombre del tratamiento",
     "title_therapies_count": "Número de terapias",
+    "title_therapies_list": "Lista de Terapias",
+    "title_therapy_name": "Nombre de la Terapia",
 
     "columnMenu_Unsort": "Sin clasificar",
     "columnMenu_SortAsc": "Ordenar en orden ascendente",
@@ -127,6 +129,7 @@
     "button_add_new_treatment": "Añadir nuevo tratamiento",
     "button_cancel": "Cancelar",
     "button_login": "Iniciar sesión",
+    "button_open_therapies_list": "Abrir Lista de Terapias",
 
     "input_basic_info": "Información básica"
 }
