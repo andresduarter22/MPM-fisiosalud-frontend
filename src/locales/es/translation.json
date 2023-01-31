@@ -50,6 +50,7 @@
     "title_therapies_count": "Número de terapias",
     "title_therapies_list": "Lista de Terapias",
     "title_therapy_name": "Nombre de la Terapia",
+    "title_therapy_status": "Estado Actual de la Terapia",
 
     "columnMenu_Unsort": "Sin clasificar",
     "columnMenu_SortAsc": "Ordenar en orden ascendente",

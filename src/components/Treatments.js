@@ -90,6 +90,9 @@ export function TreatmentsList() {
             field: 'title', headerName: t('title_therapy_name'), width: 200
         },
         {
+            field: 'therapy_status', headerName: t('title_therapy_status'), width: 200
+        },
+        {
             field: 'actions',
             type: 'actions',
             width: 80,
@@ -252,7 +255,7 @@ export function TreatmentsList() {
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Button variant="h3" component="div"
                     style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke', marginTop: 15, marginBottom: 15 }}>
-                    {t('title_shop_list')}
+                    {t('title_treatments_list')}
                 </Button>
             </div>
 
