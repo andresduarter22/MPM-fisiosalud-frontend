@@ -51,6 +51,9 @@
     "title_therapies_list": "Lista de Terapias",
     "title_therapy_name": "Nombre de la Terapia",
     "title_therapy_status": "Estado Actual de la Terapia",
+    "title_update_treatment": "Actualizar Tratamiento",
+    "title_update_staff_member": "Actualizar Miembro del Personal",
+    "title_create_staff_member": "Crear Miembro del Personal",
 
     "columnMenu_Unsort": "Sin clasificar",
     "columnMenu_SortAsc": "Ordenar en orden ascendente",
@@ -116,6 +119,10 @@
     "label_open_camera": "Abrir cámara",
     "label_login_password": "Contraseña",
     "label_login_username": "Nombre de usuario",
+    "label_delete_image": "Delete Image",
+    "label_addit_info": "Información adicional",
+    "label_add_batch": "añadir nuevo lote de horas",
+    "label_therapy_duration": "Duracion de cada Terapia",
 
     "switch_enable_edit": "Habilitar edición",
 
@@ -131,6 +138,10 @@
     "button_cancel": "Cancelar",
     "button_login": "Iniciar sesión",
     "button_open_therapies_list": "Abrir Lista de Terapias",
+    "button_take_picture": "Tomar una Foto",
+    "button_delete_image": "Borrar la imagen",
+    "button_validate_patient": "Validar rostro del paciente",
+    "button_enable_cam": "Activar Camara",
 
     "input_basic_info": "Información básica"
 }

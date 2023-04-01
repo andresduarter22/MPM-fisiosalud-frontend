@@ -51,6 +51,9 @@
     "title_therapies_list": "Therapy List",
     "title_therapy_name": "Therapy Name",
     "title_therapy_status": "Therapy Status",
+    "title_update_treatment": "Update treatment",
+    "title_update_staff_member": "Update Staff Member",
+    "title_create_staff_member": "Create Staff Member",
 
     "columnMenu_Unsort": "Unsort",
     "columnMenu_SortAsc": "Sort ASC",
@@ -116,6 +119,10 @@
     "label_open_camera": "Open Camera",
     "label_login_password": "Password",
     "label_login_username": "Username",
+    "label_delete_image": "Delete Image",
+    "label_addit_info": "Additional Info",
+    "label_add_batch": "Add hour batch",
+    "label_therapy_duration": "Therapy Duration",
 
     "switch_enable_edit": "Enable Edit",
 
@@ -130,7 +137,11 @@
     "button_add_new_treatment": "Add new Treatment",
     "button_cancel": "Cancel",
     "button_login": "Login",
-    "button_open_therapies_list": "Open Therapies List",
+    "button_open_therapies_list": "Open Therapies List",    
+    "button_take_picture": "Take a Picture",
+    "button_delete_image": "Delete Image",
+    "button_validate_patient": "Validate Patient's Face",
+    "button_enable_cam": "Enable Camera",
 
     "input_basic_info": "Basic Information"
 }

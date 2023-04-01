@@ -284,7 +284,7 @@ export function TreatmentsList() {
                         <FormControlLabel control={<Switch onChange={switchHandler} />} label={t('label_enable_editing')} />
                         <TextField
                             id="tretment_title_input"
-                            label={t('label_tretment_title')}
+                            label={t('label_treatment_title')}
                             value={treatmentTitle}
                             error={treatmentTitleError}
                             required

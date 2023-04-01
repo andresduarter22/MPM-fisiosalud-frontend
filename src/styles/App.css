@@ -40,3 +40,7 @@
 body {
   background-color: #282c34;
 }
+
+.scheduler{
+  overflow-y:auto;
+}

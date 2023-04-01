@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import env from "../config/env.js"
 import { getCookie, setCookie, removeCookie } from "../utils/cookiesManager.js";
 

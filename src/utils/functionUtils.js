@@ -66,6 +66,7 @@ const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAr
     while (therapyList.length < therapyAmount) {
         if (currentDate.getDay().toString() in requestedDays) {
             for (const time of requestedDays[currentDate.getDay().toString()]) {
+                console.log("TIME: ", time)
                 therapyList.push({
                     title: `THERAPY ${therapyList.length + 1}`,
                     date: currentDate.toISOString().substring(0, 10),
