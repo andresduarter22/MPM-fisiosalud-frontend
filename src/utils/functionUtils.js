@@ -48,7 +48,7 @@ const hourPRAM = (hour) => {
 const calculateEndHour = (startHour, durationMin) => {
     let end = new Date(startHour);
     end.setMinutes(end.getMinutes() + durationMin);
-    return `${end.toISOString()}`;
+    return end;
 };
 
 const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAreaID, therapyDuration, therapyTime="00:00:00" ) => {

@@ -27,15 +27,31 @@ export function Calendar() {
     const therapyEnpoint = "therapy";
     const [isLoaded, setIsLoaded] = useState(false);
     const [openCreate, setOpenCreate] = useState(false);
-    const [therapiesList, setTherapiesList] = useState([]);
+    const [therapiesList, setTherapiesList] = useState([{
+        "title": "Test therapy",
+        "area_id": "0",
+        "time": "19:00:00",
+        "start": new Date("Thu Apr 01 2023 19:00:00 GMT-0400 (Bolivia Time)"),
+        "end": new Date("Thu Apr 01 2023 20:00:00 GMT-0400 (Bolivia Time)"),
+        "therapy_status": "open",
+        "duration": 60
+    }]);
 
     const loadTherapies = async () => {
         try {
             const therapies = await requester.requestGetList(therapyEnpoint);
-            const events = [];
+            const events = [{
+                "title": "Test therapy",
+                "area_id": "0",
+                "time": "19:00:00",
+                "start": new Date("Thu Apr 02 2023 19:00:00 GMT-0400 (Bolivia Time)"),
+                "end": new Date("Thu Apr 02 2023 20:00:00 GMT-0400 (Bolivia Time)"),
+                "therapy_status": "open",
+                "duration": 60
+            }];
             await Promise.all(therapies.map(async (therapy) => {
-                const startDate = new Date(therapy.date + "T" + therapy.time);
-                const endDate = new Date(functionUtils.calculateEndHour(therapy.date + "T" + therapy.time, therapy.duration));
+                const startDate = new Date(therapy.date + " " + therapy.time);
+                const endDate = new Date(functionUtils.calculateEndHour(therapy.date + " " + therapy.time, therapy.duration));
                 if (therapy.therapy_status === "open") {
                     const event = {
                         event_id: therapy._id,
@@ -45,8 +61,9 @@ export function Calendar() {
                     };
                     events.push(event);
                 }
-            }));
-            setTherapiesList(events);
+            })).then(() => { setTherapiesList(therapiesList=> ([...therapiesList, ...events]));} );
+            console.log("EVENTS: ", events)
+            console.log("THERAPIES: ", therapiesList)
         } catch (error) {
             console.log(error);
         };
@@ -96,7 +113,7 @@ export function Calendar() {
         if (newHour !== actualTherapy.time) updateTherapyBody.body.time = newHour;
         console.log(updateTherapyBody)
         await requester.requestUpdate(therapyEnpoint, JSON.stringify(updateTherapyBody));
-        await loadTherapies();
+        await handleClose();
     };
 
     function cleanModalFields() { };
@@ -123,27 +140,29 @@ export function Calendar() {
                 </Button> */}
                 <Button onClick={() => { handleOpenCreate() }} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_treatment')} </Button>
             </div>
-            <div style={{ height: '100%', width: '100%', background: 'white' }}>
-                <Scheduler
-                    customEditor={(scheduler) => <CustomEditor
-                        t={t}
-                        scheduler={scheduler}
-                        setIsLoaded={setIsLoaded}
-                        handleClose={handleClose}
-                    />}
-                    viewerExtraComponent={(fields, event) => <CustomViewer
-                        fields={fields}
-                        event={event}
-                        loadTherapies={loadTherapies}
-                    />}
-                    onEventDrop={(event, therapy) => { moveTherapy(event, therapy) }}
-                    onDelete={(event) => { cancelTherapy(event) }}
-                    events={therapiesList}
-                    month={calendarProps.month}
-                    week={calendarProps.week}
-                    day={calendarProps.day}
-                />
-                <div id='calendar'></div>
+
+            <div style={{ height: 800, width: '100%', background: 'white' }} className="scheduler">
+                <div id='calendar'>
+                    <Scheduler 
+                        customEditor={(scheduler) => <CustomEditor
+                            t={t}
+                            scheduler={scheduler}
+                            setIsLoaded={setIsLoaded}
+                            handleClose={handleClose}
+                        />}
+                        viewerExtraComponent={(fields, event) => <CustomViewer
+                            fields={fields}
+                            event={event}
+                            loadTherapies={loadTherapies}
+                        />}
+                        onEventDrop={(event, therapy) => { moveTherapy(event, therapy) }}
+                        onDelete={(event) => { cancelTherapy(event) }}
+                        events={therapiesList}
+                        month={calendarProps.month}
+                        week={calendarProps.week}
+                        day={calendarProps.day}
+                    />
+                </div>
             </div>
             <Modal
                 open={openCreate}
@@ -237,8 +256,7 @@ function ValidateWithCamera({ therapyId }) {
                                 setUrl(null);
                             }}
                         >
-                            {/* TODO modificar texto */}
-                            Delete Image
+                            {t("label_delete_image")}
                         </Button>
                     </div>
                     <div>
@@ -335,13 +353,12 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies }) {
         return (
             <>
                 <Typography variant="h4" component="p" >
-                    {/* TODO modificar texto */}
                     {t('label_validation_by_id')}
                 </Typography>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <TextField
-                            id="patient_id_input"
+                            id="input_patient_id"
                             label={t('label_patient_id')}
                             onChange={functionUtils.handleSetInput(setPatientID)}
                             variant="outlined"
@@ -404,7 +421,7 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
         { label: 'label_sunday', value: '6' }
     ];
 
-    const [therapyBatches, setTherapyBatches] = useState([{ days: [], time: '', duration: 0 }]);
+    const [therapyBatches, setTherapyBatches] = useState([{ days: [], time: '', duration: 1 }]);
 
     const loadPatientsList = async () => {
         try {
@@ -516,9 +533,13 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
                 const threapyResponse = await requester.requestInsert(therapyEnpoint, JSON.stringify(requestBody));
                 return threapyResponse[0];
             }));
+        const therapiesIDsList = [];
+        console.log("1st Therapy: ", therapiesList[0].title)
+        therapiesList.forEach((item) => therapiesIDsList.push(item._id))
+        console.log("THERAPIES IDs: ", therapiesIDsList)
         const requestBodyTherapyList = {
             body: {
-                therapies: therapiesList
+                therapies: therapiesIDsList
             },
             filter: {
                 _id: treatmentID[0]._id,
@@ -588,13 +609,12 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
 
         return (<div>
             <TextField
-                id={"therapy_time_input" + props.index}
+                id={"input_therapy_time" + props.index}
                 label={t('label_therapy_time')}
                 type="time"
                 value={props.item.time}
                 required
                 error={batchError}
-                // error={therapyTimeError}
                 sx={{ width: 220 }}
                 onChange={handleBatchTime(props.index)}
                 InputLabelProps={{
@@ -611,15 +631,13 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
             >
                 {/* WARN: check another environments for which day the week starts at */}
                 {daysOfTheWeek.map((day, value) => {
-                    return (<ToggleButton value={value}>
+                    return (<ToggleButton value={value} key={value}>
                         <p>{t(day.label)}</p>
                     </ToggleButton>)
                 })}
-
             </StyledToggleButtonGroup>
             <Button onClick={handleDeleteBatch(props.index)}>
-                {/* TODO modificar texto */}
-                <p>Delete</p>
+                <p>{t("button_delete")}</p>
             </Button>
         </div>)
     };
@@ -638,11 +656,11 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
         </Typography>
         <FormGroup>
             <Box display="flex" flexDirection="column" alignItems="center">
-                <Card bordered={false} style={{ overflow: 'auto', height: '90%' }}>
+                <Card style={{ overflow: 'auto', height: '90%' }}>
                     <Grid container>
                         <Grid container item className='grid-modal'>
                             <TextField
-                                id='patient_name_input'
+                                id='input_treatment_name'
                                 label={t('label_treatment_title')}
                                 value={treatmentTitle}
                                 type="text"
@@ -653,7 +671,7 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
                         </Grid>
                         <Grid container item className='grid-modal'>
                             <TextField
-                                id='basic_info_input'
+                                id='input_basic_info'
                                 label={t('input_basic_info')}
                                 multiline
                                 sx={{ width: '100%' }}
@@ -702,7 +720,6 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        {/* TODO: arreglar los nombres */}
                         <Grid container item className='grid-modal'>
                             <TextField
                                 fullWidth
@@ -716,8 +733,8 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
                                 onChange={functionUtils.handleSetInput(setTherapyAmount)} />
                             <TextField
                                 fullWidth
-                                id='patient_id_input_create'
-                                label={'therapy duration'}
+                                id='input_therapy_duration'
+                                label={t('label_therapy_duration')}
                                 value={therapyDuration}
                                 type="number"
                                 error={therapyDurationError}
@@ -727,7 +744,7 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
                         </Grid>
                         <Grid container item className='grid-modal'>
                             <TextField
-                                id="therapy_date_input"
+                                id="input_therapy_date"
                                 label={t('label_therapy_date')}
                                 type="date"
                                 pattern="\d{4}-\d{2}-\d{2}"
@@ -741,7 +758,7 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
                                 }}
                             />
                             <TextField
-                                id={"therapy_time_input"}
+                                id={"input_therapy_time"}
                                 label={t('label_therapy_time')}
                                 type="time"
                                 value={therapyTime}
@@ -761,13 +778,12 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
                                 })}
                             </div>
                             <Button onClick={handleAddBatch} sx={{ width: '45%' }}>
-                                {/* TODO modificar texto */}
-                                <p>ADD BATCH</p>
+                                <p>{t("label_add_batch")}</p>
                             </Button>
                         </Grid>
                         <Grid container item className='grid-modal'>
                             <TextField
-                                id='additional_info_input'
+                                id='input_additional_info'
                                 label={t('label_additional_info')}
                                 multiline
                                 rows={10}

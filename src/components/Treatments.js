@@ -28,6 +28,7 @@ export function TreatmentsList() {
     const [t] = useTranslation();
     const dataGridLocales = localizedComponents.DatagridLocales();
     const treatmentEndpoint = 'treatment';
+    const therapyEnpoint = 'therapy';
     const [elements, setElements] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [openThreapiesList, setOpenThreapiesList] = useState(false);
@@ -78,7 +79,7 @@ export function TreatmentsList() {
                 <GridActionsCellItem
                     icon={<DeleteIcon />}
                     label={t('button_delete')}
-                    onClick={() => { handleDelete(params.id) }}
+                    onClick={() => { cancellTherapy(params.id) }}
                     showInMenu
                 />,
             ],
@@ -100,7 +101,7 @@ export function TreatmentsList() {
                 <GridActionsCellItem
                     icon={<DeleteIcon />}
                     label={t('button_delete')}
-                    onClick={() => { handleDelete(params.id) }}
+                    onClick={() => { cancellTherapy(params.id) }}
                     showInMenu
                 />,
             ],
@@ -108,13 +109,12 @@ export function TreatmentsList() {
     ];
 
     async function handleOpenTherapiesList(treatmentID) {
-        console.log("Therapies", treatmentID);
         const treatmentInfo = await getTreatment(treatmentID);
-        console.log(openThreapiesList);
-        console.log("Info: ", treatmentInfo.therapies);
-        setTherapiesList(treatmentInfo.therapies);
-        // TODO: get therapies list for treatment
-        // setTherapiesList([{_id: 1, title: "test"}]);
+        const therapiesIDsList = treatmentInfo.therapies;
+        for (const therapy of therapiesIDsList) {
+            therapiesList.push(await getTherapy(therapy));
+        };
+        setTherapiesList(therapiesList);
         setOpenThreapiesList(true);
     };
 
@@ -126,7 +126,6 @@ export function TreatmentsList() {
         setPatientID(treatmentInfo.patitent_info[0]);
         setPatientName(treatmentInfo.patitent_info[1]);
         setTreatmentBasicInfo(treatmentInfo.basic_info);
-        // setTherapiesList(treatmentInfo.therapies);
         setTreatmentAdditInfo(treatmentInfo.additional_info);
         setOpenUpdate(true);
     };
@@ -135,6 +134,7 @@ export function TreatmentsList() {
         setOpenUpdate(false);
         setOpenThreapiesList(false);
         enableTextFields(false);
+        setTherapiesList([]);
         cleanModalFields();
     };
 
@@ -151,6 +151,15 @@ export function TreatmentsList() {
         };
     };
 
+    async function getTherapy(itemID) {
+        try {
+            const therapy = await requester.requestGet(therapyEnpoint, itemID);
+            return therapy;
+        } catch (error) {
+            console.log(error);
+        };
+    };
+
     async function loadTreatmentsList() {
         try {
             const treatmentsList = await requester.requestGetList(treatmentEndpoint);
@@ -159,7 +168,6 @@ export function TreatmentsList() {
                 const therapiesCount = treatment.therapies.length;
                 treatment.therapiesCount = therapiesCount;
             }));
-            // console.log("trerapies count:", treatmentsList[0].therapiesCount);
             setElements(treatmentsList)
             setIsLoaded(true)
         } catch (error) {
@@ -188,15 +196,20 @@ export function TreatmentsList() {
         loadTreatmentsList();
     };
 
-    async function handleDelete(id) {
+    async function cancellTherapy(id) {
         setIsLoaded(false);
+        console.log(id)
         const requestBody = {
-            filter: {
-                _id: id,
-            }
+            body: {
+                action: "cancel",
+            },
+            filter: { _id: id }
         }
-        requester.requestDelete(treatmentEndpoint, JSON.stringify(requestBody));
+        const response = await requester.requestUpdate(therapyEnpoint, JSON.stringify(requestBody));
+        console.log(response);
         loadTreatmentsList();
+        setOpenThreapiesList(false);
+        handleClose();
     };
 
     async function cleanModalFields() {
@@ -204,7 +217,7 @@ export function TreatmentsList() {
         setPatientID('');
         setTreatmentBasicInfo('');
         setTreatmentAdditInfo('');
-        // setTherapiesList([]);
+        setTherapiesList([]);
     };
 
     async function enableTextFields(checked) {
