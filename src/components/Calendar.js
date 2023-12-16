@@ -94,6 +94,7 @@ export function Calendar() {
         const response = await requester.requestUpdate(therapyEnpoint, JSON.stringify(therapyBody));
         console.log(response);
         await loadTherapies();
+        location.reload();
     };
 
     const moveTherapy = async (event, therapy) => {
@@ -114,16 +115,17 @@ export function Calendar() {
         console.log(updateTherapyBody)
         await requester.requestUpdate(therapyEnpoint, JSON.stringify(updateTherapyBody));
         await handleClose();
+        location.reload();
     };
-
-    function cleanModalFields() { };
+    
+    function cleanModalFields() { }; 
 
     useEffect(() => {
-        const fetchTherapies = async () => {
+        (async () => {
             await loadTherapies();
-        };
-        fetchTherapies();
-        setIsLoaded(true);
+        })().then(() =>
+            setIsLoaded(true)
+        );
     }, []);
 
     if (!isLoaded) return <div>Loading...</div>;
@@ -264,8 +266,7 @@ function ValidateWithCamera({ therapyId }) {
                     </div>
                 </>
             )}
-            {/* TODO modificar texto */}
-            <Button onClick={() => handleValidateFace(therapyId)}>Validate Patient's Face</Button>
+            <Button onClick={() => handleValidateFace(therapyId)}> {t('label_validate_patients_face')}</Button>
         </FormGroup>
         <Typography> {imageValidated}</Typography>
     </Box>);
@@ -324,10 +325,13 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies }) {
         // TODO: use response to show message on toast
         const response = await requester.requestUpdate('therapy', JSON.stringify(therapyBody));
         handleClose();
+        console.log(response)
+        console.log("Only result: ", response.result)
         if (response.result) {
-            return true;
+            functionUtils.showToastMessage("user validated!", "success");
+            location.reload();
         } else {
-            return false;
+            functionUtils.showToastMessage("incorrect or invalid user, pelase check the ID", "error");
         }
     };
 

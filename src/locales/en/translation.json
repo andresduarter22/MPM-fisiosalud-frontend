@@ -123,6 +123,7 @@
     "label_addit_info": "Additional Info",
     "label_add_batch": "Add hour batch",
     "label_therapy_duration": "Therapy Duration",
+    "label_validate_patients_face": "Validate Patient's Face",
 
     "switch_enable_edit": "Enable Edit",
 
@@ -142,6 +143,7 @@
     "button_delete_image": "Delete Image",
     "button_validate_patient": "Validate Patient's Face",
     "button_enable_cam": "Enable Camera",
+    "button_disable_cam": "Disable Camera",
 
     "input_basic_info": "Basic Information"
 }

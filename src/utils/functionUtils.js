@@ -114,6 +114,16 @@ const nextDate = (date) => {
     return nextDate;
 }
 
+const showToastMessage = async(message, type) => {
+    // You can implement your own toast notification logic here, or use a library like Toastify.
+    // Example using an alert for simplicity (replace with a toast library in your actual project).
+    if (type === "success") {
+        alert(message);
+    } else if (type === "error") {
+        alert("Error: " + message);
+    }
+};
+
 const exports = {
     handleSetInput,
     sleep,
@@ -123,6 +133,7 @@ const exports = {
     generateTherapyList,
     getDate,
     getHour,
+    showToastMessage,
 };
 
 export default exports;

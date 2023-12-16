@@ -79,7 +79,7 @@ export function Login() {
                                 label={t('label_login_username')}
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder={t('login.usernamePlaceholder')}
+                                placeholder={t('label_login_username')}
                                 disabled={isLoading}
                                 required
                             >
@@ -94,7 +94,7 @@ export function Login() {
                                 label={t('label_login_password')}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder={t('login.passwordPlaceholder')}
+                                placeholder={t('label_login_password')}
                                 disabled={isLoading}
                                 required
                             >
