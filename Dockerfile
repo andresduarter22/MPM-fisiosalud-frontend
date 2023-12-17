@@ -11,5 +11,5 @@ RUN cat ./src/config/env.js.example > ./src/config/env.js
 RUN export NODE_TLS_REJECT_UNAUTHORIZED=0
 RUN npm install -g serve
 RUN export PATH="$PATH:$(npm list -g | head -1)"
-
+RUN dos2unix ./run.sh
 EXPOSE 3000
