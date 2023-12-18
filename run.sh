@@ -10,4 +10,4 @@ openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out c
 
 export NODE_TLS_REJECT_UNAUTHORIZED=0
 
-serve -s dist -l 443 --ssl-cert ./cert.pem --ssl-key ./key.pem`
+serve -s dist -l 443 --ssl-cert ./cert.pem --ssl-key ./key.pem
