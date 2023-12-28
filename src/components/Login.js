@@ -6,8 +6,10 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import requester from "../apiRequester/Requester.js"
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import { setCookie } from "../utils/cookiesManager.js";
+import companyLogo from '../src/logo.png'
 
 export function Login() {
     const [username, setUsername] = useState('');
@@ -58,62 +60,69 @@ export function Login() {
     }; 
 
     return (
-        // TODO: Fix UI of login page
-        <div className="App" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ marginTop: "2%" }}>
-            <Typography 
-            variant="h4" 
-            component={Typography}
-            sx={{textColor: 'primary', fontWeight: 'bold'}}          
-            >{t('title_login')}</Typography>
+        <div className="App" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '5%', backgroundColor: '#282C34' }} >
+            <div style={{ marginTop: '2%', marginBottom: '20px', borderRadius: '8px' }}>
+                <img src={companyLogo} alt="Company Logo" style={{ width: '150px', borderRadius: '8px' }} />
             </div>
             <div className="App-content">
-                <div className="App-content-login">
-                    <div className="App-content-login-form">
-                        <FormControl>
-                            <TextField
-                                htmlFor="username"
-                                id="username"
-                                type="text"
-                                error={usernameError}
-                                label={t('label_login_username')}
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder={t('label_login_username')}
-                                disabled={isLoading}
-                                required
-                            >
-                            </TextField>
-                        </FormControl>
-                        <FormControl>
-                            <TextField
-                                htmlFor="password"
-                                id="password"
-                                type="password"
-                                error={passwordError}
-                                label={t('label_login_password')}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder={t('label_login_password')}
-                                disabled={isLoading}
-                                required
-                            >
-                            </TextField>
-                        </FormControl>
-                        <div className="App-content-login-form-buttons">
-                            <Button
+            <Card style={{ maxWidth: '400px', width: '100%', borderRadius: '8px', boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.1)' }}>
+                <CardContent>
+                    <FormControl>
+                        <TextField
+                            htmlFor="username"
+                            id="username"
+                            type="text"
+                            error={usernameError}
+                            label={t('label_login_username')}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder={t('label_login_username')}
+                            disabled={isLoading}
+                            required
 
-                                onClick={handleLogin}
-                                disabled={isLoading}
-                            >
-                                {t('button_login')}
-                            </Button>
+                            variant="outlined"
+                            fullWidth
+                            style={{ marginBottom: '20px' }}
+                        >
+                        </TextField>
+                    </FormControl>
+                    <FormControl>
+                        <TextField
+                            htmlFor="password"
+                            id="password"
+                            type="password"
+                            error={passwordError}
+                            label={t('label_login_password')}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder={t('label_login_password')}
+                            disabled={isLoading}
+                            required
+
+                            variant="outlined"
+                            fullWidth
+                            style={{ marginBottom: '20px' }}
+                        >
+                        </TextField>
+                    </FormControl>
+                    <div className="App-content-login-form-buttons">
+                        <Button
+                            onClick={handleLogin}
+                            disabled={isLoading}
+                            
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            style={{ marginTop: '20px' }}
+                        >
+                            {t('button_login')}
+                        </Button>
                         </div>
-                    </div>
-                    {/* <div className="App-content-login-error">
-                        {error && <div className="App-content-login-error-message">{error}</div>}
-                    </div> */}
-                </div>
+                        {/* <div className="App-content-login-error">
+                            {error && <div className="App-content-login-error-message">{error}</div>}
+                        </div> */}
+                </CardContent>
+            </Card>
                 <div className="App-content-login-status">
                     {isLoggedIn && <div className="App-content-login-status-message">{t('login.loggedIn')}</div>}
                 </div>
