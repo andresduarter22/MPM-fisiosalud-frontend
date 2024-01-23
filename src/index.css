@@ -84,3 +84,30 @@ code {
   padding: 32px;
   }
 }
+
+/* MainToolbar.css */
+
+.main-toolbar {
+  border-radius: 12px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.main-toolbar-link {
+  margin: 2px;
+  color: white;
+  display: block;
+  text-decoration: none;
+}
+
+.main-toolbar-button {
+  border-radius: 20px;
+  margin: 8px; /* Adjust spacing as needed */
+  color: white;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+}
+
+.main-toolbar-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}

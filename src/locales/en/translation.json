@@ -54,6 +54,10 @@
     "title_update_treatment": "Update treatment",
     "title_update_staff_member": "Update Staff Member",
     "title_create_staff_member": "Create Staff Member",
+    "title_staff_name": "Name",
+    "title_staff_phone_number": "Phone Number",
+    "title_staff_email": "Email",
+    "title_staff_role": "Role",
 
     "columnMenu_Unsort": "Unsort",
     "columnMenu_SortAsc": "Sort ASC",

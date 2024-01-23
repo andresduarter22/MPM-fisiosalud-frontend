@@ -300,13 +300,21 @@ export function Patients() {
     if (!isLoaded) return <div>Loading...</div>;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke', marginTop: 15, marginBottom: 15 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', background: '#e0e0e0', padding: '1%', borderRadius: 10, marginTop: '2%' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', background: 'white', borderRadius: 10, padding: 10 }}>
+                <Button variant="h3" component="div"
+                    style={{ display: 'flex', justifyContent: 'flex-start', color: 'black', marginTop: 15, marginBottom: 15 }}>
                     {t('title_patient_list')}
                 </Button>
+                <Fab onClick={handleOpenCreate}
+                    variant="text"
+                    size="medium"
+                    color="secondary"
+                    style={{ borderRadius: '30%' }}>
+                    <AddIcon />
+                </Fab>
             </div>
-            <div style={{ height: 600, width: '100%', background: 'white' }}>
+            <div style={{ height: 600, width: '100%', background: 'white', borderRadius: 10, marginTop: 10, overflow: 'hidden' }}>
                 <DataGrid
                     rows={elements}
                     columns={columns}
@@ -626,9 +634,6 @@ export function Patients() {
                     </FormGroup>
                 </Box>
             </Modal>
-            <Fab onClick={handleOpenCreate} variant="text" style={{ position: 'absolute', bottom: 10, right: 10 }} size="medium" color="secondary">
-                <AddIcon />
-            </Fab>
         </div>
     );
 };

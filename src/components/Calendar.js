@@ -132,9 +132,10 @@ export function Calendar() {
 
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', background: '#e0e0e0', padding: '1%', borderRadius: 10, marginTop: '2%' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', background: 'white', borderRadius: 10, padding: 10 }}>
+                <Button variant="h3" component="div"
+                    style={{ display: 'flex', justifyContent: 'flex-start', color: 'black', marginTop: 15, marginBottom: 15 }}>
                     {t('title_calendar')}
                 </Button>
                 {/* <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke' }} onClick={() => { handleOpenValidateFace() }}>
@@ -143,7 +144,7 @@ export function Calendar() {
                 <Button onClick={() => { handleOpenCreate() }} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_treatment')} </Button>
             </div>
 
-            <div style={{ height: 800, width: '100%', background: 'white' }} className="scheduler">
+            <div style={{ height: 600, width: '100%', background: 'white', borderRadius: 10, marginTop: 10, overflow: 'hidden', overflow: 'auto' }} className="scheduler">
                 <div id='calendar'>
                     <Scheduler 
                         customEditor={(scheduler) => <CustomEditor

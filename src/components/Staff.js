@@ -82,14 +82,14 @@ export function Staff() {
 
     const columns = [
         {
-            field: '_id', headerName: 'ID', width: 200, renderCell: (params) => (
+            field: '_id', headerName: t('title_patient_id'), width: 200, renderCell: (params) => (
                 <Link underline="none" rel='noopener' onClick={() => handleOpenUpdate(params.value)}>{params.value}</Link>
             )
         },
-        { field: 'staff_name', headerName: 'Name', width: 200 },
-        { field: 'staff_phone_number', headerName: 'Phone Number', width: 200 },
-        { field: 'staff_email', headerName: 'Email', width: 200 },
-        { field: 'staff_role', headerName: 'Role', width: 200 },
+        { field: 'staff_name', headerName: t('title_staff_name'), width: 200 },
+        { field: 'staff_phone_number', headerName: t('title_staff_phone_number'), width: 200 },
+        { field: 'staff_email', headerName: t('title_staff_email'), width: 200 },
+        { field: 'staff_role', headerName: t('title_staff_role'), width: 200 },
         {
             field: 'actions',
             type: 'actions',
@@ -225,14 +225,22 @@ export function Staff() {
     if (!isLoaded) return <div>Loading...</div>;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Button variant="h3" component="div" style={{ display: 'flex', justifyContent: 'flex-end', color: 'whitesmoke', marginTop: 15, marginBottom: 15 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', background: '#e0e0e0', padding: '1%', borderRadius: 10, marginTop: '2%' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', background: 'white', borderRadius: 10, padding: 10 }}>
+                <Button variant="h3" component="div"
+                    style={{ display: 'flex', justifyContent: 'flex-start', color: 'black', marginTop: 15, marginBottom: 15 }}>
                     {t('title_staff_list')}
                 </Button>
+                <Fab onClick={handleOpenCreate}
+                    variant="text"
+                    size="medium"
+                    color="secondary"
+                    style={{ borderRadius: '30%' }}>
+                    <AddIcon />
+                </Fab>
                 {/* <Button onClick={handleOpenCreate} variant="text" style={{ marginTop: 15, marginBottom: 15 }}> {t('button_add_new_staff')} </Button> */}
             </div>
-            <div style={{ height: 600, width: '100%', background: 'white' }}>
+            <div style={{ height: 600, width: '100%', background: 'white', borderRadius: 10, marginTop: 10, overflow: 'hidden' }}>
                 <DataGrid
                     rows={elements}
                     columns={columns}
@@ -338,9 +346,6 @@ export function Staff() {
                         </FormGroup>
                     </Box>
                 </Modal>
-                <Fab onClick={handleOpenCreate} variant="text" style={{ position: 'absolute', bottom: 10, right:10 }} size="medium" color="secondary">
-                    <AddIcon />
-            </Fab>
             </div>
         </div>
     );

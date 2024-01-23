@@ -44,3 +44,12 @@ body {
 .scheduler{
   overflow-y:auto;
 }
+
+.mySchedulerContainer {
+  height: 600px;
+  width: 100%;
+  background: white;
+  border-radius: 10px;
+  margin-top: 10px;
+  overflow: auto; /* Add the overflow property for the scrollbar */
+}

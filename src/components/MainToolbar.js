@@ -9,13 +9,31 @@ import Link from '@mui/material/Link';
 
 export function MainToolbar(props) {
     return (
-        <AppBar position="static">
+        <AppBar position="static" className="main-toolbar">
             <Container maxWidth="xl">
                 <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                     <Toolbar disableGutters>
                         {props.pages.map((page) => (
-                            <Link key={page} component={RouterLink} to={`/${page}`} sx={{ my: 2, color: 'white', display: 'block' }}>
-                                <Button sx={{ my: 0.5, color: 'white', display: 'block' }}>
+                            <Link
+                                key={page}
+                                component={RouterLink}
+                                to={`/${page}`}
+                                className="main-toolbar-link"
+                            >
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        borderRadius: '20px',
+                                        my: 0.5,
+                                        mx: 1,
+                                        color: 'white',
+                                        backgroundColor: 'transparent',
+                                        transition: 'background-color 0.3s ease',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                        },
+                                    }}
+                                >
                                     {page}
                                 </Button>
                             </Link>
