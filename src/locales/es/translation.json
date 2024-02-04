@@ -128,6 +128,7 @@
     "label_add_batch": "añadir nuevo lote de horas",
     "label_therapy_duration": "Duracion de cada Terapia",
     "label_validate_patients_face": "Validar rostro del paciente",
+    "label_take_picture": "Tomar imagen",
 
     "switch_enable_edit": "Habilitar edición",
 

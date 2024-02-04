@@ -30,9 +30,9 @@ export function Calendar() {
     const [therapiesList, setTherapiesList] = useState([{
         "title": "Test therapy",
         "area_id": "0",
-        "time": "19:00:00",
-        "start": new Date("Thu Apr 01 2023 19:00:00 GMT-0400 (Bolivia Time)"),
-        "end": new Date("Thu Apr 01 2023 20:00:00 GMT-0400 (Bolivia Time)"),
+        "time": "07:00:00",
+        "start": new Date("Sat Feb 03 2024 07:00:00 GMT-0400 (Bolivia Time)"),
+        "end": new Date("Sat Feb 03 2024 08:00:00 GMT-0400 (Bolivia Time)"),
         "therapy_status": "open",
         "duration": 60
     }]);
@@ -44,8 +44,8 @@ export function Calendar() {
                 "title": "Test therapy",
                 "area_id": "0",
                 "time": "19:00:00",
-                "start": new Date("Thu Apr 02 2023 19:00:00 GMT-0400 (Bolivia Time)"),
-                "end": new Date("Thu Apr 02 2023 20:00:00 GMT-0400 (Bolivia Time)"),
+                "start": new Date("Sat Feb 03 2024 07:00:00 GMT-0400 (Bolivia Time)"),
+                "end": new Date("Sat Feb 03 2024 08:00:00 GMT-0400 (Bolivia Time)"),
                 "therapy_status": "open",
                 "duration": 60
             }];
@@ -197,12 +197,14 @@ function ValidateWithCamera({ therapyId }) {
     const webcamRef = useRef(null);
     const [url, setUrl] = useState(null);
     const [imageValidated, setImageValidated] = useState("Not validated");
+
     const capture = useCallback(() => {
         const imageSrc = webcamRef.current.getScreenshot();
         if (imageSrc) {
             setUrl(imageSrc);
         }
     }, [webcamRef]);
+
     const handleValidateFace = async (therapyId) => {
         const therapyBody = {
             body: {
@@ -212,7 +214,9 @@ function ValidateWithCamera({ therapyId }) {
             },
             filter: { _id: therapyId }
         };
-        const response = await requester.requestUpdate(therapyEnpoint, JSON.stringify(therapyBody))
+
+        const response = await requester.requestUpdate(therapyEnpoint, JSON.stringify(therapyBody));
+
         if (response.result) {
             const patientInfo = await requester.requestGet(patientEndpoint, response.id);
             setImageValidated(`Welcome ${patientInfo.patient_name}!`);
@@ -227,68 +231,77 @@ function ValidateWithCamera({ therapyId }) {
         facingMode: "user"
     };
 
+    return (
+        <Box className='modal-box-big' style={{ borderRadius: '12px', padding: '20px', maxWidth: '80%', margin: 'auto',  textAlign: 'center'}}>
+            <Typography variant="h5" component="h2" style={{ margin: '10px' }}>
+                {t('title_update_patient')}
+            </Typography>
+            <Typography>
+                {t('title_patient_id')} {therapyId}
+            </Typography>
+            <FormGroup style={{ marginTop: '20px' }}>
+                <div>
+                    <Webcam
+                        audio={false}
+                        width={540}
+                        height={360}
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        videoConstraints={videoConstraints}
+                        style={{ margin: 'auto' }}
+                    />
+                </div>
+                <Button onClick={capture} style={{ marginTop: '10px' }}>
+                    {t('label_take_picture')}
+                </Button>
 
-    return (<Box className='modal-box-big'>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-            {t('title_update_patient')}
-        </Typography>
-        <Typography id="modal-modal-content">
-            ID: {therapyId}
-        </Typography>
-        <FormGroup>
-            {(
-                <>
-                    <div>
-                        <Webcam
-                            audio={false}
-                            width={540}
-                            height={360}
-                            ref={webcamRef}
-                            screenshotFormat="image/jpeg"
-                            videoConstraints={videoConstraints}
-                        />
-                    </div>
-                    <Button onClick={capture}>Take picture</Button>
-                </>
-            )}
-            {url && (
-                <>
-                    <div>
-                        <Button
-                            onClick={() => {
-                                setUrl(null);
-                            }}
-                        >
-                            {t("label_delete_image")}
-                        </Button>
-                    </div>
-                    <div>
-                        <img src={url} alt="Screenshot" />
-                    </div>
-                </>
-            )}
-            <Button onClick={() => handleValidateFace(therapyId)}> {t('label_validate_patients_face')}</Button>
-        </FormGroup>
-        <Typography> {imageValidated}</Typography>
-    </Box>);
+                {url && (
+                    <>
+                        <div>
+                            <Button
+                                onClick={() => {
+                                    setUrl(null);
+                                }}
+                                style={{ marginTop: '10px' }}
+                            >
+                                {t("label_delete_image")}
+                            </Button>
+                        </div>
+                        <div>
+                            <img src={url} alt="Screenshot" style={{ maxWidth: '100%', marginTop: '10px' }} />
+                        </div>
+                    </>
+                )}
+                <Button onClick={() => handleValidateFace(therapyId)} style={{ marginTop: '10px' }}>
+                    {t('label_validate_patients_face')}
+                </Button>
+            </FormGroup>
+
+            <Typography>{imageValidated}</Typography>
+        </Box>
+    );
 };
 
 function CustomViewer({ event, loadTherapies }) {
-    // TODO: beutify this component xD
     const [t] = useTranslation();
     const [faceValidation, setFaceValidation] = useState(false);
+
+    const handleToggleValidation = () => {
+        setFaceValidation(!faceValidation);
+    };
+
     return (
-        <>
+        <div style={{ width: '80%', margin: 'auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px', marginBottom: '20px' }}>
             <Typography variant="h6" component="h2">
                 {event.title}
             </Typography>
-            <Typography variant="body1" component="p" sx={{ width: '95%' }}>
+            {/* <Typography variant="body1" component="p" sx={{ width: '95%' }}>
                 {t('label_start')}: {event.start.toString()}
             </Typography>
             <Typography variant="body1" component="p" sx={{ width: '95%' }}>
                 {t('label_end')}: {event.end.toString()}
-            </Typography>
-            <Button onClick={() => setFaceValidation(!faceValidation)}>
+            </Typography> */}
+            <Button onClick={handleToggleValidation} variant="contained" color="primary" style={{ marginTop: '10px' }}>
                 {t('label_toggle_validation_type')}
             </Button>
             <PatientValidation
@@ -296,9 +309,9 @@ function CustomViewer({ event, loadTherapies }) {
                 therapy_id={event.event_id}
                 loadTherapies={loadTherapies}
             />
-        </>
+        </div>
     );
-};
+}
 
 function PatientValidation({ faceValidation, therapy_id, loadTherapies }) {
     const [t] = useTranslation();
@@ -357,34 +370,57 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies }) {
     } else {
         return (
             <>
-                <Typography variant="h4" component="p" >
-                    {t('label_validation_by_id')}
-                </Typography>
-                <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                        <TextField
-                            id="input_patient_id"
-                            label={t('label_patient_id')}
-                            onChange={functionUtils.handleSetInput(setPatientID)}
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            sx={{ width: '90%' }}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            fullWidth
-                            sx={{ width: '60%' }}
-                            onClick={handleValidateID}
-                        >
-                            {t('label_validate')}
-                        </Button>
-                    </Grid>
+            {/* Title */}
+            <Typography variant="h5" component="p" align="center" style={{ marginTop: '3%' }}>
+                {t('label_validation_by_id')}
+            </Typography>
+
+            {/* Grid container for input and button */}
+            <Grid container spacing={3}>
+                {/* Patient ID input field */}
+                <Grid item xs={12}>
+                    <TextField
+                        id="input_patient_id"
+                        label={t('label_patient_id')}
+                        onChange={functionUtils.handleSetInput(setPatientID)}
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        sx={{ width: '90%' }}
+                    />
                 </Grid>
-            </>
+
+                {/* Therapy comments input field */}
+                <Grid item xs={12}>
+                    <TextField
+                        id="input_therapy_comments"
+                        label={t('label_therapy_comments')}
+                        //TODO: add comments to db
+                        // value={therapyComments}
+                        // onChange={(e) => setTherapyComments(e.target.value)}
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        multiline  // Allow multiple lines
+                        rows={4}    // Set the number of rows
+                        sx={{ width: '90%' }}
+                    />
+                </Grid>
+
+                {/* Validate button */}
+                <Grid item xs={12}>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        fullWidth
+                        sx={{ width: '60%', margin: 'auto' }}
+                        onClick={handleValidateID}
+                    >
+                        {t('label_validate')}
+                    </Button>
+                </Grid>
+            </Grid>
+        </>
         );
     }
 };

@@ -23,21 +23,21 @@ const calendarProps = {
         showDatePicker: true
     },
     month: {
-        weekDays: [0, 1, 2, 3, 4, 5, 6],
-        weekStartOn: 6,
-        startHour: 0,
-        endHour: 24,
+        weekDays: [0, 1, 2, 3, 4, 5],
+        weekStartOn: 1,
+        startHour: 7,
+        endHour: 22,
     },
     week: {
-        weekDays: [0, 1, 2, 3, 4, 5, 6],
-        weekStartOn: 6,
-        startHour: 0,
-        endHour: 24,
+        weekDays: [0, 1, 2, 3, 4, 5],
+        weekStartOn: 1,
+        startHour: 7,
+        endHour: 22,
         step: 15
     },
     day:{
-        startHour: 0,
-        endHour: 24,
+        startHour: 7,
+        endHour: 22,
         step: 15
     },
 }
