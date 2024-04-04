@@ -504,7 +504,7 @@ export function Patients() {
                                 <img required src={url} alt="Screenshot" style={{ maxWidth: '100%', height: 'auto' }} />
                             </div>
                             <Button onClick={() => { setUrl(null); }} style={{ marginTop: '8px', width: '100%' }}>
-                                {t('button_remove_image')}
+                                {t('label_delete_image')}
                             </Button>
                             </div>
                         </>

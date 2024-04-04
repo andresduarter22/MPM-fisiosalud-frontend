@@ -116,8 +116,8 @@ export function StoreArticlesList() {
 
     async function loadShopList() {
         try {
-            const contactList = await requester.requestGetList(shopItemEndpoint);
-            setElements(contactList)
+            const shopList = await requester.requestGetList(shopItemEndpoint);
+            setElements(shopList)
             setIsLoaded(true)
         } catch (error) {
             setIsLoaded(true)
@@ -141,13 +141,12 @@ export function StoreArticlesList() {
 
         if (openCreate) {
             requester.requestInsert(shopItemEndpoint, JSON.stringify(requestBody));
-            setOpenCreate(false);
         } else if (openUpdate) {
             requestBody.filter._id = updateShopItemID;
             requester.requestUpdate(shopItemEndpoint, JSON.stringify(requestBody));
-            setOpenUpdate(false);
         }
         handleClose();
+        cleanModalFields();
         loadShopList();
     };
 

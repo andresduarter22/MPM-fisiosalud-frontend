@@ -58,6 +58,7 @@
     "title_staff_phone_number": "Phone Number",
     "title_staff_email": "Email",
     "title_staff_role": "Role",
+    "title_image_taken": "Image Taken",
 
     "columnMenu_Unsort": "Unsort",
     "columnMenu_SortAsc": "Sort ASC",
@@ -129,6 +130,7 @@
     "label_therapy_duration": "Therapy Duration",
     "label_validate_patients_face": "Validate Patient's Face",
     "label_take_picture": "Take picture",
+    "label_therapy_comments": "Therapy comments",
 
     "switch_enable_edit": "Enable Edit",
 

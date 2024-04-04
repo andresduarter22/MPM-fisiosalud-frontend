@@ -58,6 +58,7 @@
     "title_staff_phone_number": "Número de teléfono",
     "title_staff_email": "Correo electrónico",
     "title_staff_role": "Rol",
+    "title_image_taken": "Imagen tomada",
 
     "columnMenu_Unsort": "Sin clasificar",
     "columnMenu_SortAsc": "Ordenar en orden ascendente",
@@ -123,12 +124,13 @@
     "label_open_camera": "Abrir cámara",
     "label_login_password": "Contraseña",
     "label_login_username": "Nombre de usuario",
-    "label_delete_image": "Delete Image",
+    "label_delete_image": "Borrar Imagen",
     "label_addit_info": "Información adicional",
     "label_add_batch": "añadir nuevo lote de horas",
     "label_therapy_duration": "Duracion de cada Terapia",
     "label_validate_patients_face": "Validar rostro del paciente",
     "label_take_picture": "Tomar imagen",
+    "label_therapy_comments": "Comentarios sobre la terapia",
 
     "switch_enable_edit": "Habilitar edición",
 

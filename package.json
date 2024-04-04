@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@aldabil/react-scheduler": "^2.7.8",
+    "@aldabil/react-scheduler": "2.7.8",
     "@babel/eslint-parser": "*",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
