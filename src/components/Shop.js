@@ -107,8 +107,7 @@ export function StoreArticlesList() {
 
     async function getShopItem(itemID) {
         try {
-            const shopItem = await requester.requestGet(shopItemEndpoint, itemID);
-            return shopItem;
+            return await requester.requestGet(shopItemEndpoint, itemID);
         } catch (error) {
             console.log(error);
         };
@@ -140,10 +139,10 @@ export function StoreArticlesList() {
         };
 
         if (openCreate) {
-            requester.requestInsert(shopItemEndpoint, JSON.stringify(requestBody));
+           await  requester.requestInsert(shopItemEndpoint, JSON.stringify(requestBody));
         } else if (openUpdate) {
-            requestBody.filter._id = updateShopItemID;
-            requester.requestUpdate(shopItemEndpoint, JSON.stringify(requestBody));
+           requestBody.filter._id = updateShopItemID;
+           await requester.requestUpdate(shopItemEndpoint, JSON.stringify(requestBody));
         }
         handleClose();
         cleanModalFields();

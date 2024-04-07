@@ -51,14 +51,15 @@ const calculateEndHour = (startHour, durationMin) => {
     return end;
 };
 
-const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAreaID, therapyDuration, therapyTime="00:00:00" ) => {
+const generateTherapyList = (treatmentTitle, startDate, therapyAmount, therapyBatches, workingAreaID, therapyDuration, therapyTime="00:00:00" ) => {
     const therapyList = [{
-        title: "THERAPY 1",
+        title: `${treatmentTitle}: 1`,
         date: startDate,
         area_id: workingAreaID,
         time: therapyTime,
         therapy_status: "open",
         duration: therapyDuration,
+        additional_info: ''
         
     }];
     let currentDate = nextDate(new Date(startDate));
@@ -68,12 +69,13 @@ const generateTherapyList = (startDate, therapyAmount, therapyBatches, workingAr
             for (const time of requestedDays[currentDate.getDay().toString()]) {
                 console.log("TIME: ", time)
                 therapyList.push({
-                    title: `THERAPY ${therapyList.length + 1}`,
+                    title: `${treatmentTitle}: ${therapyList.length + 1}`,
                     date: currentDate.toISOString().substring(0, 10),
                     area_id: workingAreaID, 
                     time: time,
                     therapy_status: "open",
-                    duration: therapyDuration
+                    duration: therapyDuration,
+                    additional_info: ''
                 });
             }
         }

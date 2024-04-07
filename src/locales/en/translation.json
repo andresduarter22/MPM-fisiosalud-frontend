@@ -131,6 +131,7 @@
     "label_validate_patients_face": "Validate Patient's Face",
     "label_take_picture": "Take picture",
     "label_therapy_comments": "Therapy comments",
+    "label_user_validated": "User identity is correct, welcome!",
 
     "switch_enable_edit": "Enable Edit",
 
@@ -151,6 +152,7 @@
     "button_validate_patient": "Validate Patient's Face",
     "button_enable_cam": "Enable Camera",
     "button_disable_cam": "Disable Camera",
+    "button_reopen": "Re-open",
 
     "input_basic_info": "Basic Information"
 }

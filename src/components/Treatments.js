@@ -5,6 +5,7 @@ import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -15,6 +16,7 @@ import FormGroup from '@mui/material/FormGroup';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Tooltip from '@mui/material/Tooltip';
 // import FormControl from '@mui/material/FormControl';
 // import Select from '@mui/material/Select';
 // import InputLabel from '@mui/material/InputLabel';
@@ -94,13 +96,22 @@ export function TreatmentsList() {
             field: 'therapy_status', headerName: t('title_therapy_status'), width: 200
         },
         {
+            field: 'additional_info', headerName: t('title_additional_info'), width: 200
+        },
+        {
             field: 'actions',
             type: 'actions',
             width: 80,
             getActions: (params) => [
                 <GridActionsCellItem
+                    icon={<KeyboardArrowRightIcon />}
+                    label={t('button_reopen')}
+                    onClick={() => { reopenTherapy(params.id) }}
+                    showInMenu
+                />,
+                <GridActionsCellItem
                     icon={<DeleteIcon />}
-                    label={t('button_delete')}
+                    label={t('button_cancel')}
                     onClick={() => { cancellTherapy(params.id) }}
                     showInMenu
                 />,
@@ -120,7 +131,6 @@ export function TreatmentsList() {
 
     async function handleOpenUpdate(treatmentID) {
         const treatmentInfo = await getTreatment(treatmentID);
-        console.log("patient: ", treatmentInfo.patitent_info);
         setUpdateTreatmentID(treatmentID);
         setTreatmentTitle(treatmentInfo.title);
         setPatientID(treatmentInfo.patitent_info[0]);
@@ -144,8 +154,7 @@ export function TreatmentsList() {
 
     async function getTreatment(itemID) {
         try {
-            const treatment = await requester.requestGet(treatmentEndpoint, itemID);
-            return treatment;
+            return await requester.requestGet(treatmentEndpoint, itemID);
         } catch (error) {
             console.log(error);
         };
@@ -153,8 +162,7 @@ export function TreatmentsList() {
 
     async function getTherapy(itemID) {
         try {
-            const therapy = await requester.requestGet(therapyEnpoint, itemID);
-            return therapy;
+            return await requester.requestGet(therapyEnpoint, itemID);
         } catch (error) {
             console.log(error);
         };
@@ -163,7 +171,6 @@ export function TreatmentsList() {
     async function loadTreatmentsList() {
         try {
             const treatmentsList = await requester.requestGetList(treatmentEndpoint);
-            console.log("treatments", treatmentsList);
             Promise.all(treatmentsList.map(async (treatment) => {
                 const therapiesCount = treatment.therapies.length;
                 treatment.therapiesCount = therapiesCount;
@@ -190,7 +197,7 @@ export function TreatmentsList() {
             }
         };
         if (treatmentAdditInfo !== '') requestBody.body.additional_info = treatmentAdditInfo;
-        requester.requestUpdate(treatmentEndpoint, JSON.stringify(requestBody));
+        await requester.requestUpdate(treatmentEndpoint, JSON.stringify(requestBody));
         setOpenUpdate(false);
         handleClose();
         loadTreatmentsList();
@@ -198,15 +205,27 @@ export function TreatmentsList() {
 
     async function cancellTherapy(id) {
         setIsLoaded(false);
-        console.log(id)
         const requestBody = {
             body: {
                 action: "cancel",
             },
             filter: { _id: id }
         }
-        const response = await requester.requestUpdate(therapyEnpoint, JSON.stringify(requestBody));
-        console.log(response);
+        await requester.requestUpdate(therapyEnpoint, JSON.stringify(requestBody));
+        loadTreatmentsList();
+        setOpenThreapiesList(false);
+        handleClose();
+    };
+
+    async function reopenTherapy(id) {
+        setIsLoaded(false);
+        const requestBody = {
+            body: {
+                action: "open",
+            },
+            filter: { _id: id }
+        }
+        await requester.requestUpdate(therapyEnpoint, JSON.stringify(requestBody));
         loadTreatmentsList();
         setOpenThreapiesList(false);
         handleClose();

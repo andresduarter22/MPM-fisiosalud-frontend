@@ -41,7 +41,7 @@ export function Calendar() {
         try {
             const therapies = await requester.requestGetList(therapyEnpoint);
             const events = [{
-                "title": "Test therapy",
+                "title": "Just here to test calendar :D",
                 "area_id": "0",
                 "time": "19:00:00",
                 "start": new Date("Sat Feb 03 2024 07:00:00 GMT-0400 (Bolivia Time)"),
@@ -157,6 +157,7 @@ export function Calendar() {
                             fields={fields}
                             event={event}
                             loadTherapies={loadTherapies}
+                            handleClose={handleClose}
                         />}
                         onEventDrop={(event, therapy) => { moveTherapy(event, therapy) }}
                         onDelete={(event) => { cancelTherapy(event) }}
@@ -193,9 +194,9 @@ function CustomEditor({ scheduler, t, setIsLoaded, handleClose }) {
 function ValidateWithCamera({ therapyId }) {
     const [t] = useTranslation();
     const therapyEnpoint = "therapy";
-    const patientEndpoint = "patient";
     const webcamRef = useRef(null);
     const [url, setUrl] = useState(null);
+    const [therapyComments, setTherapyComments] = useState('');
     const [imageValidated, setImageValidated] = useState("Not validated");
 
     const capture = useCallback(() => {
@@ -211,6 +212,7 @@ function ValidateWithCamera({ therapyId }) {
                 therapy_status: "closed",
                 action: "validate_face",
                 patient_image: url,
+                additional_info: therapyComments
             },
             filter: { _id: therapyId }
         };
@@ -218,8 +220,8 @@ function ValidateWithCamera({ therapyId }) {
         const response = await requester.requestUpdate(therapyEnpoint, JSON.stringify(therapyBody));
 
         if (response.result) {
-            const patientInfo = await requester.requestGet(patientEndpoint, response.id);
-            setImageValidated(`Welcome ${patientInfo.patient_name}!`);
+            await functionUtils.showToastMessage(t('label_user_validated'));
+            location.reload();
         } else {
             setImageValidated(response.message);
         }
@@ -278,6 +280,23 @@ function ValidateWithCamera({ therapyId }) {
             </FormGroup>
 
             <Typography>{imageValidated}</Typography>
+
+                {/* Therapy comments input field */}
+                <Grid item xs={12}>
+                    <TextField
+                        id="input_therapy_comments"
+                        label={t('label_therapy_comments')}
+                        // TODO: add comments to db
+                        onChange={functionUtils.handleSetInput(setTherapyComments)}
+                        setSessionComments
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        multiline  // Allow multiple lines
+                        rows={4}    // Set the number of rows
+                        sx={{ width: '90%' }}
+                    />
+                </Grid>
         </Box>
     );
 };
@@ -316,15 +335,22 @@ function CustomViewer({ event, loadTherapies }) {
 function PatientValidation({ faceValidation, therapy_id, loadTherapies }) {
     const [t] = useTranslation();
     const [patientID, setPatientID] = useState('');
+    const [therapyComments, setTherapyComments] = useState('');
     const [openValidateFace, setOpenValidateFace] = useState(false);
     async function handleOpenValidateFace() { setOpenValidateFace(true) };
     const handleClose = async () => {
         const fetchTherapies = async () => {
             await loadTherapies();
         };
+        cleanModalFields();
         fetchTherapies();
-        // setIsLoaded(true);
+        setIsLoaded(true);
         setOpenValidateFace(false);
+    };
+
+    async function cleanModalFields() {
+        setTherapyComments('');
+        setPatientID('');
     };
 
     const handleValidateID = async () => {
@@ -333,25 +359,24 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies }) {
                 therapy_status: "closed",
                 action: "validate_id",
                 patient_id: patientID,
+                additional_info: therapyComments
             },
             filter: { _id: therapy_id }
         };
-        // TODO: use response to show message on toast
         const response = await requester.requestUpdate('therapy', JSON.stringify(therapyBody));
-        handleClose();
-        console.log(response)
-        console.log("Only result: ", response.result)
+       
+        console.log("validate from ID")
         if (response.result) {
-            functionUtils.showToastMessage("user validated!", "success");
+            await functionUtils.showToastMessage(t('label_user_validated'));
             location.reload();
         } else {
-            functionUtils.showToastMessage("incorrect or invalid user, pelase check the ID", "error");
+            await functionUtils.showToastMessage("incorrect or invalid user, pelase check the ID", "error");
         }
+        handleClose();
     };
 
     if (faceValidation) {
         return (
-            // TODO: open this modal when the user clicks on the button
             <>
                 <Typography variant="h2" component="p">
                     <Button onClick={async () => { await handleOpenValidateFace() }}>
@@ -363,7 +388,9 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies }) {
                     onClose={handleClose}
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-content" >
-                    <ValidateWithCamera therapyId={therapy_id} />
+                    <ValidateWithCamera 
+                        therapyId={therapy_id}
+                    />
                 </Modal>
             </>
         );
@@ -395,9 +422,9 @@ function PatientValidation({ faceValidation, therapy_id, loadTherapies }) {
                     <TextField
                         id="input_therapy_comments"
                         label={t('label_therapy_comments')}
-                        //TODO: add comments to db
-                        // value={therapyComments}
-                        // onChange={(e) => setTherapyComments(e.target.value)}
+                        // TODO: add comments to db
+                        onChange={functionUtils.handleSetInput(setTherapyComments)}
+                        setSessionComments
                         variant="outlined"
                         margin="normal"
                         fullWidth
@@ -560,6 +587,7 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
         const treatmentID = await requester.requestInsert(treatmentEnpoint, JSON.stringify(requestBodyTreatment));
         const therapiesList = await Promise.all(
             functionUtils.generateTherapyList(
+                treatmentTitle,
                 therapyDate,
                 Number(therapyAmount),
                 therapyBatches,
