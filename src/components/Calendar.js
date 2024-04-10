@@ -222,11 +222,15 @@ function ValidateWithCamera({ therapyId }) {
         if (response.result) {
             await functionUtils.showToastMessage(t('label_user_validated'));
             location.reload();
-        } else {
-            setImageValidated(response.message);
+        } else if (response.message = "Patient face not found, pelase try again"){
+            setImageValidated(t('label_patient_not_found'));
         }
     };
 
+    const handleClose = async () => {
+        location.reload();
+    };
+    
     const videoConstraints = {
         width: 720,
         height: 360,
@@ -236,10 +240,7 @@ function ValidateWithCamera({ therapyId }) {
     return (
         <Box className='modal-box-big' style={{ borderRadius: '12px', padding: '20px', maxWidth: '80%', margin: 'auto',  textAlign: 'center'}}>
             <Typography variant="h5" component="h2" style={{ margin: '10px' }}>
-                {t('title_update_patient')}
-            </Typography>
-            <Typography>
-                {t('title_patient_id')} {therapyId}
+                {t('title_validate_patient_face')}
             </Typography>
             <FormGroup style={{ marginTop: '20px' }}>
                 <div>
@@ -297,6 +298,7 @@ function ValidateWithCamera({ therapyId }) {
                         sx={{ width: '90%' }}
                     />
                 </Grid>
+                <Button onClick={handleClose}> {t('button_cancel')} </Button>
         </Box>
     );
 };
@@ -616,6 +618,7 @@ function CreateTreatment({ t, setIsLoaded, handleClose }) {
         };
         await requester.requestUpdate(treatmentEnpoint, JSON.stringify(requestBodyTherapyList));
         handleClose();
+        location.reload();
     };
 
     // TODO: see if all requiered fields are here

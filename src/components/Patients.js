@@ -342,14 +342,24 @@ export function Patients() {
                         id='patient_id_input_create'
                         label={t('label_patient_id')}
                         value={patientID}
-                        type="number"
+                        type="text"
                         error={patientIDError}
-                        sx={{ width: '33%' }}
+                        sx={{ width: '100%' }}
                         required
                         onChange={functionUtils.handleSetInput(setPatientID)}
                     />
-
-                    {/* Patient Name, Email */}
+                    {/* Patient Email */}
+                    <TextField
+                        id='patient_email_input_create'
+                        label={t('label_patient_email')}
+                        value={patientEmail}
+                        type="email"
+                        sx={{ width: '100%' }}
+                        error={patientEmailError}
+                        required
+                        onChange={functionUtils.handleSetInput(setPatientEmail)}
+                    />
+                    {/* Patient Name, nickname */}
                     <Grid container spacing={1}>
                         <Grid container item className='grid-modal'>
                         <TextField
@@ -363,35 +373,24 @@ export function Patients() {
                             onChange={functionUtils.handleSetInput(setPatientName)}
                         />
                         <TextField
-                            id='patient_email_input_create'
-                            label={t('label_patient_email')}
-                            value={patientEmail}
-                            type="email"
-                            sx={{ width: '45%' }}
-                            error={patientEmailError}
-                            required
-                            onChange={functionUtils.handleSetInput(setPatientEmail)}
-                        />
-                        </Grid>
-
-                        {/* Patient Phone, Birthday */}
-                        <Grid container item justifyContent="space-between">
-                        <TextField
                             id='patient_nickname_input_create'
                             label={t('label_patient_nickname')}
                             value={patientNickname}
-                            sx={{ width: '30%' }}
+                            sx={{ width: '45%' }}
                             error={patientNicknameError}
                             required
                             onChange={functionUtils.handleSetInput(setPatientNickname)}
                         />
+                        </Grid>
+                        {/* Patient Phone, Birthday */}
+                        <Grid container item justifyContent="space-between">
                         <TextField
                             id='patient_phone_number_input_create'
                             label={t('label_patient_phone_number')}
                             value={patientPhoneNumber}
                             type="number"
                             error={patientPhoneNumberError}
-                            sx={{ width: '30%' }}
+                            sx={{ width: '45%' }}
                             required
                             onChange={functionUtils.handleSetInput(setPatientPhoneNumber)}
                         />
@@ -402,7 +401,7 @@ export function Patients() {
                             value={patientBirthday}
                             required
                             error={patientBirthdayError}
-                            sx={{ width: '30%' }}
+                            sx={{ width: '45%' }}
                             onChange={functionUtils.handleSetInput(setPatientBirthday)}
                             InputLabelProps={{ shrink: true, }}
                         />
@@ -542,12 +541,24 @@ export function Patients() {
                             id='patient_id_input_update'
                             label={t('label_patient_id')}
                             value={patientID}
-                            type="number"
+                            type="text"
                             error={patientIDError}
-                            sx={{ width: 220 }}
+                            sx={{ width: '100%' }}
                             required
                             onChange={functionUtils.handleSetInput(setPatientID)}
                             disabled={!isEditing} />
+
+                        <TextField
+                            id='patient_email_input_update'
+                            label={t('label_patient_email')}
+                            value={patientEmail}
+                            type="email"
+                            sx={{ width: '100%' }}
+                            error={patientEmailError}
+                            required
+                            onChange={functionUtils.handleSetInput(setPatientEmail)}
+                            disabled={!isEditing} />
+
                         <Grid container spacing={1}>
                             <Grid container item className='grid-modal'>
                                 <TextField
@@ -561,32 +572,22 @@ export function Patients() {
                                     onChange={functionUtils.handleSetInput(setPatientName)}
                                     disabled={!isEditing} />
                                 <TextField
-                                    id='patient_email_input_update'
-                                    label={t('label_patient_email')}
-                                    value={patientEmail}
-                                    type="email"
-                                    sx={{ width: '45%' }}
-                                    error={patientEmailError}
-                                    required
-                                    onChange={functionUtils.handleSetInput(setPatientEmail)}
-                                    disabled={!isEditing} />
-                            </Grid>
-                            <Grid container item justifyContent="space-between">
-                                <TextField
                                     id='patient_nickname_input_update'
                                     label={t('label_patient_nickname')}
-                                    sx={{ width: '33%' }}
+                                    sx={{ width: '45%' }}
                                     value={patientNickname}
                                     error={patientNicknameError}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientNickname)}
                                     disabled={!isEditing} />
+                            </Grid>
+                            <Grid container item justifyContent="space-between">
                                 <TextField
                                     id='patient_phone_number_input_update'
                                     label={t('label_patient_phone_number')}
                                     value={patientPhoneNumber}
                                     error={patientPhoneNumberError}
-                                    sx={{ width: '33%' }}
+                                    sx={{ width: '45%' }}
                                     required
                                     onChange={functionUtils.handleSetInput(setPatientPhoneNumber)}
                                     disabled={!isEditing} />
@@ -597,7 +598,7 @@ export function Patients() {
                                     value={patientBirthday}
                                     required
                                     error={patientBirthdayError}
-                                    sx={{ width: '33%' }}
+                                    sx={{ width: '45%' }}
                                     onChange={functionUtils.handleSetInput(setPatientBirthday)}
                                     InputLabelProps={{ shrink: true, }}
                                     disabled={!isEditing} />

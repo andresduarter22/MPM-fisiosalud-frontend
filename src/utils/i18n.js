@@ -11,7 +11,7 @@ i18n
     .init({
         detection: { order: ["path", "navigator"] },
         debug: true,
-        fallbackLng: "en",
+        fallbackLng: "es",
         react: {
             useSuspense: false
         },

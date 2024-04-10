@@ -5,7 +5,7 @@
     "title_files": "Files",
     "title_settings": "Settings",
     "title_working_areas_list": "Working Areas",
-    "title_shop_Article": "Store Articles",
+    "title_shop_article": "Store Articles",
     "title_shop_list": "Store Articles List",
     "title_contact_name": "Name",
     "title_contact_phone_number": "Phone Number",
@@ -59,6 +59,7 @@
     "title_staff_email": "Email",
     "title_staff_role": "Role",
     "title_image_taken": "Image Taken",
+    "title_validate_patient_face": "Validate patient's face",
 
     "columnMenu_Unsort": "Unsort",
     "columnMenu_SortAsc": "Sort ASC",
@@ -66,6 +67,7 @@
     "columnMenu_Filter": "Filter",
     "columnMenu_HideColumn": "Hide",
     "columnMenu_ShowColumns": "Show Column",
+    "columnMenu_ManageColumns": "Manage columns",
 
     "label_contact_name": "Contact name",
     "label_contact_phone_number": "Contact Phone number",
@@ -125,13 +127,13 @@
     "label_login_password": "Password",
     "label_login_username": "Username",
     "label_delete_image": "Delete Image",
-    "label_addit_info": "Additional Info",
     "label_add_batch": "Add hour batch",
     "label_therapy_duration": "Therapy Duration",
     "label_validate_patients_face": "Validate Patient's Face",
     "label_take_picture": "Take picture",
     "label_therapy_comments": "Therapy comments",
     "label_user_validated": "User identity is correct, welcome!",
+    "label_patient_not_found": "Patient face not found, pelase try again",
 
     "switch_enable_edit": "Enable Edit",
 

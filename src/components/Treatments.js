@@ -354,7 +354,7 @@ export function TreatmentsList() {
                         </Grid>
                         <TextField
                             id="addit_info_input"
-                            label={t('label_addit_info')}
+                            label={t('label_additional_info')}
                             value={treatmentAdditInfo}
                             multiline
                             rows={5}

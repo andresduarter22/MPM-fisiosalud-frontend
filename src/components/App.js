@@ -14,7 +14,7 @@ import '../styles/App.css';
 
 export function App() {
     const [t] = useTranslation();
-    const pages = [t("title_calendar"), t("title_patitent"), t("title_working_areas_list"), t("title_contact_list"), t("title_treatments_list"), t("title_shop_Article"), t("title_staff")];
+    const pages = [t("title_calendar"), t("title_patitent"), t("title_working_areas_list"), t("title_contact_list"), t("title_treatments_list"), t("title_shop_article"), t("title_staff")];
     const pageClasses = [<Calendar/>, <Patients/>, <WorkingArea/>, <ContactList/>, <TreatmentsList/>, <StoreArticlesList/>, <Staff/>]
     if (getCookie("access_token") === undefined) {
         return <Login />

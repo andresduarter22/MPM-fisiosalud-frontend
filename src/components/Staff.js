@@ -259,22 +259,21 @@ export function Staff() {
                             {t('title_create_staff_member')}
                         </Typography>
                         <FormGroup>
-                            {/* TODO: fix translations */}
-                            <TextField id="staff_id_input" label="Staff ID" value={staffID} error={staffIDError} required
+                            <TextField id="staff_id_input" label={t('label_staff_id')} value={staffID} error={staffIDError} required
                                 onChange={functionUtils.handleSetInput(setStaffID)} />
-                            <TextField id="staff_name_input" label="Staff Name" value={staffName} error={staffNameError} required
+                            <TextField id="staff_name_input" label={t('label_staff_name')} value={staffName} error={staffNameError} required
                                 onChange={functionUtils.handleSetInput(setStaffName)} />
-                            <TextField id="staff_password_input" label="Staff Password" type="password" value={staffPassword} error={staffPasswordError} required
+                            <TextField id="staff_password_input" label={t('label_staff_password')} type="password" value={staffPassword} error={staffPasswordError} required
                                 onChange={functionUtils.handleSetInput(setStaffPassword)} />
-                            <TextField id="staff_phone_number_input" label="Staff Phone Number" value={staffPhoneNumber} error={staffPhoneError} required
+                            <TextField id="staff_phone_number_input" label={t('label_staff_phone_number')} value={staffPhoneNumber} error={staffPhoneError} required
                                 onChange={functionUtils.handleSetInput(setStaffPhoneNumber)} />
-                            <TextField id="staff_email_input" label="Staff Email" value={staffEmail} error={staffEmailError} required
+                            <TextField id="staff_email_input" label={t('label_staff_email')} value={staffEmail} error={staffEmailError} required
                                 onChange={functionUtils.handleSetInput(setStaffEmail)} />
                             <FormControl fullWidth>
-                                <InputLabel id="staff_role_label" required>Role</InputLabel>
+                                <InputLabel id="staff_role_label" required>{t('label_staff_role')}</InputLabel>
                                 <Select
                                     labelId="staff_role_label"
-                                    label="Role"
+                                    label={t('label_staff_role')}
                                     id="staff_role_select"
                                     value={staffRole}
                                     onChange={functionUtils.handleSetInput(setStaffRole)}
@@ -311,22 +310,22 @@ export function Staff() {
                             {t('title_update_staff_member')}
                         </Typography>
                         <FormGroup>
-                            <FormControlLabel control={<Switch onChange={switchHandler} />} label="Enable editing" />
-                            <TextField id="staff_id_input" label="Staff ID" value={staffID} disabled={!isEditing} error={staffIDError}
+                            <FormControlLabel control={<Switch onChange={switchHandler} />} label={t('label_enable_editing')} />
+                            <TextField id="staff_id_input" label={t('label_staff_id')} value={staffID} disabled={!isEditing} error={staffIDError}
                                 onChange={functionUtils.handleSetInput(setStaffID)} />
-                            <TextField id="staff_name_input" label="Staff Name" value={staffName} disabled={!isEditing} error={staffNameError}
+                            <TextField id="staff_name_input" label={t('label_staff_name')} value={staffName} disabled={!isEditing} error={staffNameError}
                                 onChange={functionUtils.handleSetInput(setStaffName)} />
-                            <TextField id="staff_password_input" label="Staff Password" type="password" value={staffPassword} error={staffPasswordError} required
+                            <TextField id="staff_password_input" label={t('label_staff_password')} type="password" value={staffPassword} disabled={!isEditing} error={staffPasswordError} required
                                 onChange={functionUtils.handleSetInput(setStaffPassword)} />
-                            <TextField id="staff_phone_number_input" label="Staff Phone Number" value={staffPhoneNumber} disabled={!isEditing} error={staffPhoneError}
+                            <TextField id="staff_phone_number_input" label={t('label_staff_phone_number')} value={staffPhoneNumber} disabled={!isEditing} error={staffPhoneError}
                                 onChange={functionUtils.handleSetInput(setStaffPhoneNumber)} />
-                            <TextField id="staff_email_input" label="Staff Email" value={staffEmail} disabled={!isEditing} error={staffEmailError}
+                            <TextField id="staff_email_input" label={t('label_staff_email')} value={staffEmail} disabled={!isEditing} error={staffEmailError}
                                 onChange={functionUtils.handleSetInput(setStaffEmail)} />
                             <FormControl fullWidth>
-                                <InputLabel id="staff_role_label" required>Role</InputLabel>
+                                <InputLabel id="staff_role_label" required>{t('label_staff_role')}</InputLabel>
                                 <Select
                                     labelId="staff_role_label"
-                                    label="Role"
+                                    label={t('label_staff_role')}
                                     id="staff_role_select"
                                     value={staffRole}
                                     onChange={functionUtils.handleSetInput(setStaffRole)}

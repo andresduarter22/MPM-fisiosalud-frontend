@@ -9,7 +9,8 @@ function DatagridLocales() {
         columnMenuSortDesc: t("columnMenu_SortDesc"),
         columnMenuFilter: t("columnMenu_Filter"),
         columnMenuHideColumn: t("columnMenu_HideColumn"),
-        columnMenuShowColumns: t(("columnMenu_ShowColumns"))
+        columnMenuShowColumns: t(("columnMenu_ShowColumns")),
+        columnMenuManageColumns: t("columnMenu_ManageColumns"),
     };
     return localizedTextsMap
 }

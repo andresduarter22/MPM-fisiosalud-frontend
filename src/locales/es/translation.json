@@ -1,6 +1,6 @@
 {
     "title_calendar": "Calendario",
-    "title_patient": "Pacientes",
+    "title_patitent": "Pacientes",
     "title_contact_list": "Contactos",
     "title_files": "Archivos",
     "title_settings": "Propiedades",
@@ -16,7 +16,7 @@
     "title_area_list": "Áreas de trabajo",
     "title_area_name": "Nombre de área",
     "title_area_total_capacity": "Capacidad total",
-    "title_area_available": "Disponibilidad",
+    "title_area_avialable": "Disponibilidad",
     "title_staff_list": "Personal",
     "title_update_area": "Actualizar área de trabajo",
     "title_area_create": "Crear un área de trabajo",
@@ -59,6 +59,8 @@
     "title_staff_email": "Correo electrónico",
     "title_staff_role": "Rol",
     "title_image_taken": "Imagen tomada",
+    "title_validate_patient_face": "Validar rostro del paciente",
+    "label_patient_not_found": "Rostro del paciente no encontrado, intente nuevamente",
 
     "columnMenu_Unsort": "Sin clasificar",
     "columnMenu_SortAsc": "Ordenar en orden ascendente",
@@ -66,6 +68,7 @@
     "columnMenu_Filter": "Filtro",
     "columnMenu_HideColumn": "Ocultar",
     "columnMenu_ShowColumns": "Mostrar columnas",
+    "columnMenu_ManageColumns": "Gestionar columnas",
 
     "label_contact_name": "Nombre del contacto",
     "label_contact_phone_number": "Número de teléfono",
@@ -83,7 +86,7 @@
     "label_area_name": "Nombre de área",
     "label_area_total_capacity": "Capacidad máxima",
     "label_area_current_capacity": "Capacidad actual",
-    "label_area_available": "Área Disponible",
+    "label_area_avialable": "Área Disponible",
     "label_additional_info": "Información adicional",
     "label_patient_id": "ID del paciente (CI o pasaporte)",
     "label_patient_name": "Nombre completo",
